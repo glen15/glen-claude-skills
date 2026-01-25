@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "description": "Glen's Claude Skills - Local Skill Repository",
+
+  "skills": {
+    "directory": "skills",
+    "enabled": true
+  },
+
+  "permissions": {
+    "allow": [
+      "Bash(ln:*)",
+      "Bash(tree:*)",
+      "Bash(chmod:*)",
+      "Bash(ls:*)"
+    ]
+  }
+}

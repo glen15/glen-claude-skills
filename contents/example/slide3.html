@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .slide {
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      text-align: center;
+    }
+
+    .title-section h2 {
+      font-size: 56px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #38BDF8;
+    }
+
+    .title-section p {
+      font-size: 24px;
+      color: #94A3B8;
+      font-weight: 300;
+    }
+
+    .comparison {
+      display: flex;
+      gap: 60px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .comparison-item {
+      flex: 1;
+      max-width: 300px;
+    }
+
+    .comparison-item.ai {
+      border-left: 4px solid #2563EB;
+      padding-left: 24px;
+      text-align: left;
+    }
+
+    .comparison-item.human {
+      border-right: 4px solid #38BDF8;
+      padding-right: 24px;
+      text-align: right;
+    }
+
+    .comparison-item h3 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .comparison-item.ai h3 {
+      color: #2563EB;
+    }
+
+    .comparison-item.human h3 {
+      color: #38BDF8;
+    }
+
+    .feature {
+      font-size: 16px;
+      color: #CBD5E1;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .vs {
+      font-size: 20px;
+      color: #64748B;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="title-section">
+      <h2>AI vs Human</h2>
+      <p>우리가 기억하는 인간과 AI의 대결</p>
+    </div>
+
+    <div class="comparison">
+      <div class="comparison-item ai">
+        <h3>AI</h3>
+        <p class="feature">빠른 계산</p>
+        <p class="feature">정확성</p>
+        <p class="feature">확장성</p>
+        <p class="feature">24/7 운영</p>
+      </div>
+
+      <p class="vs">VS</p>
+
+      <div class="comparison-item human">
+        <h3>Human</h3>
+        <p class="feature">창의성</p>
+        <p class="feature">감정 이해</p>
+        <p class="feature">적응력</p>
+        <p class="feature">윤리 판단</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
