@@ -1,127 +1,82 @@
 # Glen's Claude Skills
 
-Claude Code에서 사용할 수 있는 스킬들의 중앙 저장소입니다.
+Claude Code 개인 스킬 저장소
 
-## 🎯 시스템 구조 (Claude Code 표준)
+## 구조
 
 ```
 glen-claude-skills/
-│
-├── .claude/                   ← Claude Code 설정
-│   └── skills/               ← Claude Code가 인식하는 스킬
-│       └── pptx/             ← PPTX 스킬 (self-contained)
-│           ├── SKILL.md      ← 메인 스킬 파일
-│           ├── package.json
-│           ├── lib/          ← 빌더 API 라이브러리
-│           │   ├── index.js
-│           │   ├── builder.js
-│           │   └── themes/   ← 테마 (v1, v2)
-│           └── tools/        ← 편집 도구 (Python)
-│
-└── contents/                 ← PPT 소스 콘텐츠
+├── CLAUDE.md                    # 프로젝트 규칙 (Immutability, 보안 등)
+└── .claude/
+    ├── settings.json            # 설정 + hooks
+    ├── agents/                  # 에이전트 프롬프트
+    ├── commands/                # 슬래시 커맨드
+    └── skills/                  # 스킬
 ```
 
-### 특징
+## 에이전트 (9개)
 
-- ✅ **Claude Code 표준** 준수
-- ✅ **테마 기반** 디자인 시스템
-- ✅ **빌더 API** 선언적 PPT 생성
-- ✅ **자동 인식** (이 프로젝트를 열면 스킬 자동 표시)
+| 에이전트 | 용도 |
+|----------|------|
+| planner | 구현 계획 전문가 |
+| tdd-guide | TDD 워크플로우 |
+| architect | 시스템 아키텍처 |
+| code-reviewer | 코드 품질/보안 리뷰 |
+| build-error-resolver | 빌드 에러 해결 |
+| doc-updater | 문서/코드맵 업데이트 |
+| e2e-runner | Playwright E2E 테스트 |
+| refactor-cleaner | 죽은 코드 정리 |
+| security-reviewer | 보안 취약점 탐지 |
 
----
+## 커맨드 (9개)
 
-## 📚 사용 가능한 스킬
+| 커맨드 | 용도 |
+|--------|------|
+| /plan | 구현 계획 생성 |
+| /tdd | TDD 워크플로우 적용 |
+| /code-review | 코드 품질/보안 리뷰 |
+| /e2e | E2E 테스트 생성/실행 |
+| /build-fix | 빌드/타입 에러 해결 |
+| /refactor-clean | 죽은 코드 정리 |
+| /test-coverage | 테스트 커버리지 분석 |
+| /update-codemaps | 코드맵 업데이트 |
+| /update-docs | 문서 동기화 |
 
-| 스킬 | 설명 | 버전 | 문서 |
-|------|------|------|------|
-| **PPTX** | PowerPoint 프레젠테이션 생성 및 편집 | v2.0 | [SKILL.md](.claude/skills/pptx/SKILL.md) |
+## 스킬 (8개)
 
----
-
-## 🚀 빠른 시작
-
-### 의존성 설치
-
-```bash
-cd .claude/skills/pptx
-npm install
-```
-
-### 프레젠테이션 생성
-
-```javascript
-// presentation.js
-const { PresentationBuilder } = require('./.claude/skills/pptx/lib');
-
-async function main() {
-  const builder = new PresentationBuilder('nxtcloud-v1');  // 또는 'nxtcloud-v2'
-
-  builder.addTitleSlide({
-    title: '프레젠테이션 제목',
-    subtitle: '부제목',
-    company: 'Company Name'
-  });
-
-  builder.addSectionSlide({
-    number: '01',
-    title: '섹션 제목'
-  });
-
-  builder.addContentSlide({
-    title: '콘텐츠',
-    components: [{
-      type: 'cards',
-      items: [
-        { icon: '📊', title: '항목 1', desc: '설명' },
-        { icon: '📈', title: '항목 2', desc: '설명' }
-      ]
-    }]
-  });
-
-  await builder.save('output.pptx');
-}
-
-main();
-```
-
-```bash
-node presentation.js
-open output.pptx
-```
-
-📖 **자세한 사용법**: [SKILL.md](./.claude/skills/pptx/SKILL.md)
-
----
-
-## 🎨 테마
-
-| 테마 | 스타일 | 색상 |
-|------|--------|------|
-| `nxtcloud-v1` | 중앙 정렬, 상단 액센트 바 | 파란색 계열 |
-| `nxtcloud-v2` | 좌측 정렬, 사이드 액센트 바 | 녹색 계열 |
-
----
-
-## 📖 문서
-
-| 문서 | 설명 |
+| 스킬 | 용도 |
 |------|------|
-| [SKILL.md](.claude/skills/pptx/SKILL.md) | 메인 스킬 설명서 |
-| [tools/ooxml.md](.claude/skills/pptx/tools/ooxml.md) | OOXML 편집 레퍼런스 |
+| pptx | PowerPoint 생성/편집 |
+| coding-standards | TypeScript/React 코딩 표준 |
+| backend-patterns | 백엔드 아키텍처 패턴 |
+| frontend-patterns | React/Next.js 패턴 |
+| clickhouse-io | ClickHouse 데이터베이스 |
+| security-review/ | 보안 리뷰 워크플로우 |
+| tdd-workflow/ | TDD 워크플로우 |
+| project-guidelines-example | 프로젝트 가이드라인 예시 |
+
+## Hooks
+
+settings.json에 정의된 자동화 훅:
+
+- **PreToolUse**: dev 서버 tmux 강제, git push 리뷰, .md 생성 차단
+- **PostToolUse**: Prettier 자동 포맷, TypeScript 체크, console.log 경고
+- **Stop**: 세션 종료 전 console.log 감사
+
+## 사용법
+
+```bash
+cd ~/Desktop/work/glen-claude-skills
+claude
+```
+
+커맨드 사용:
+```
+/plan 새 기능 구현 계획
+/tdd 함수 테스트 작성
+/code-review
+```
 
 ---
 
-## ➕ 새 스킬 추가하기
-
-Claude Code 표준에 따라:
-
-```
-.claude/skills/[skill-name]/
-├── SKILL.md           ← 필수: 스킬 정의
-└── ...                ← 추가 파일
-```
-
----
-
-**버전**: 2.0
 **마지막 업데이트**: 2026-01-26
