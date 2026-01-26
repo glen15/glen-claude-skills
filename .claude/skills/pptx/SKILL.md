@@ -21,15 +21,45 @@ Create, edit, or analyze the contents of .pptx files when requested. A .pptx fil
 
 **Before starting any presentation task**, read ALL relevant documentation files completely to understand the full workflow:
 
-1. **For creating new presentations**: Read [`html2pptx.md`](html2pptx.md) and [`css.md`](css.md) in their entirety
-2. **For editing existing presentations**: Read [`ooxml.md`](ooxml.md) in its entirety
-3. **For template-based creation**: Read the relevant sections of this file plus [`css.md`](css.md)
+1. **For creating new presentations (JS 템플릿 방식, 권장)**: Read [`PPT-Design-Guide.md`](PPT-Design-Guide.md) and [`ppt-template-nxtcloud.js`](ppt-template-nxtcloud.js) as reference
+2. **For creating new presentations (HTML 방식)**: Read [`html2pptx.md`](html2pptx.md) and [`css.md`](css.md) in their entirety
+3. **For editing existing presentations**: Read [`ooxml.md`](ooxml.md) in its entirety
+4. **For template-based creation**: Read the relevant sections of this file plus [`css.md`](css.md)
 
 **NEVER set any range limits when reading these files.** Understanding the complete workflow, constraints, and best practices before starting is essential for producing high-quality presentations. Partial knowledge leads to errors, inconsistent styling, and visual defects that require rework.
 
 ---
 
-## Quick Start
+## Quick Start (JS 템플릿 방식 - 권장)
+
+### NXT Cloud 스타일 PPT 생성
+
+```bash
+# 1. Create content folder
+mkdir -p /Users/glen/Desktop/work/glen-claude-skills/contents/my-presentation
+cd /Users/glen/Desktop/work/glen-claude-skills/contents/my-presentation
+
+# 2. Create presentation.js based on the template
+# Reference: .claude/skills/pptx/ppt-template-nxtcloud.js
+# Design Guide: .claude/skills/pptx/PPT-Design-Guide.md
+
+# 3. Generate PPT
+NODE_PATH="$(npm root -g)" node presentation.js
+
+# 4. View result
+open output.pptx
+```
+
+### JS 템플릿 방식의 장점
+
+- **정밀한 제어**: 픽셀 단위로 위치, 크기 조정 가능
+- **일관된 디자인**: 색상 팔레트, 폰트 크기 등 체계화
+- **다양한 레이아웃**: 타이틀, 섹션, 콘텐츠, 정리 슬라이드 등 유형별 템플릿
+- **시각적 요소**: 타임라인, 카드, 아이콘, 구분선 등 풍부한 요소
+
+---
+
+## Quick Start (HTML 방식)
 
 ### Run Example
 
@@ -57,6 +87,120 @@ NODE_PATH="$(npm root -g)" node ../../.claude/skills/pptx/build.js
 
 # 5. View result
 open output.pptx
+```
+
+---
+
+## Creating a new PowerPoint presentation (JS 템플릿 방식 - 권장)
+
+NXT Cloud 스타일의 고품질 프레젠테이션을 생성하는 권장 워크플로우입니다. pptxgenjs를 직접 사용하여 정밀한 제어가 가능합니다.
+
+### 필수 문서
+
+시작하기 전에 반드시 읽어야 할 파일들:
+
+1. **[`PPT-Design-Guide.md`](PPT-Design-Guide.md)** - 색상 팔레트, 폰트 크기, 레이아웃 가이드
+2. **[`ppt-template-nxtcloud.js`](ppt-template-nxtcloud.js)** - 실제 구현 예제 (참고용, 전체를 읽을 필요 없이 필요한 슬라이드 유형만 참조)
+
+### 워크플로우
+
+1. **프레젠테이션 기획**:
+   - 주제와 대상 청중 확인
+   - 섹션 구성 및 슬라이드 개요 작성
+   - 각 슬라이드의 레이아웃 유형 결정
+
+2. **색상 팔레트 설정** (PPT-Design-Guide.md 참조):
+   ```javascript
+   const colors = {
+     navy: "0f172a",      // 섹션 정리 배경
+     primary: "2563eb",   // 주요 강조색
+     accent: "38bdf8",    // 포인트 색상
+     white: "ffffff",     // 일반 배경
+     slate100: "f1f5f9",  // 카드 배경
+     slate500: "64748b",  // 부제목
+     slate900: "1e293b",  // 제목
+     // ...추가 색상
+   };
+   ```
+
+3. **슬라이드 유형별 레이아웃**:
+
+   **타이틀 슬라이드**:
+   - 배경: Navy
+   - 상단 Primary 바
+   - 중앙 정렬 제목 (54pt Bold)
+   - 하단 회사명, 대상 정보
+
+   **섹션 타이틀 슬라이드**:
+   - 배경: 섹션별 테마 색상
+   - 큰 섹션 번호 (01, 02...)
+   - 중앙 정렬 섹션 제목 (48pt Bold)
+
+   **내용 슬라이드**:
+   - 배경: White
+   - 좌측 상단 제목 (36pt Bold)
+   - y 1.5 이후 내용 영역
+   - 우측 하단 워터마크
+
+   **섹션 정리 슬라이드**:
+   - 배경: Navy
+   - 강조 레이블 (accent 색상)
+   - 핵심 메시지 + 불릿 포인트
+
+4. **JS 파일 작성**:
+   ```javascript
+   const pptxgen = require("pptxgenjs");
+
+   async function createPresentation() {
+     const pptx = new pptxgen();
+     pptx.layout = "LAYOUT_16x9";
+     pptx.author = "NXT Cloud";
+     pptx.title = "프레젠테이션 제목";
+
+     // 색상 정의
+     const colors = { /* PPT-Design-Guide.md 참조 */ };
+
+     // 슬라이드 생성 (ppt-template-nxtcloud.js 참조)
+     let slide1 = pptx.addSlide();
+     slide1.background = { color: colors.navy };
+     // ...
+
+     await pptx.writeFile({ fileName: "output.pptx" });
+   }
+
+   createPresentation();
+   ```
+
+5. **실행 및 검증**:
+   ```bash
+   NODE_PATH="$(npm root -g)" node presentation.js
+   open output.pptx
+   ```
+
+### 주요 API 예시
+
+**텍스트 추가**:
+```javascript
+slide.addText("제목", {
+  x: 0.5, y: 0.4, w: 9, h: 0.6,
+  fontSize: 36, color: colors.slate900, bold: true
+});
+```
+
+**도형 추가**:
+```javascript
+slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+  x: 0.5, y: 1.5, w: 4, h: 2,
+  fill: { type: "solid", color: colors.slate100 }
+});
+```
+
+**워터마크**:
+```javascript
+slide.addText("Modern IT Trend 2026", {
+  x: 7.5, y: 5.2, w: 2.3, h: 0.3,
+  align: "right", fontSize: 10, color: colors.slate400
+});
 ```
 
 ---
@@ -185,6 +329,107 @@ To edit slides in an existing PowerPoint presentation, work with the raw Office 
 3. Edit the XML files (primarily `ppt/slides/slide{N}.xml` and related files)
 4. **CRITICAL**: Validate immediately after each edit: `python ooxml/scripts/validate.py <dir> --original <file>`
 5. Pack the final presentation: `python ooxml/scripts/pack.py <input_directory> <office_file>`
+
+---
+
+## Modifying Speaker Notes Only (발표자 메모 수정)
+
+기존 PPTX 파일의 발표자 메모만 수정할 때 사용합니다. 전체 프레젠테이션을 다시 생성하지 않고 메모만 업데이트합니다.
+
+### 사용 시나리오
+
+- 처음 생성 시 슬라이드와 발표자 메모가 함께 만들어진 후
+- 사용자가 발표자 메모를 더 상세하게 작성해달라고 요청할 때
+- 기존 메모를 수정하거나 보완할 때
+
+### 워크플로우
+
+1. **가상환경 활성화** (python-pptx 사용):
+   ```bash
+   source /Users/glen/Desktop/work/glen-claude-skills/.claude/skills/pptx/venv/bin/activate
+   ```
+
+2. **기존 메모 추출** (선택사항):
+   ```bash
+   python /Users/glen/Desktop/work/glen-claude-skills/.claude/skills/pptx/update-notes.py extract presentation.pptx notes-current.json
+   ```
+
+   출력 예시:
+   ```
+   슬라이드 1: 250 글자
+   슬라이드 2: 180 글자
+   ...
+   추출 완료: notes-current.json
+   ```
+
+3. **새 발표자 메모 JSON 작성** (`notes.json`):
+
+   **형식 1**: 슬라이드 번호 지정
+   ```json
+   {
+     "notes": [
+       {"slide": 1, "text": "첫 번째 슬라이드 발표자 메모입니다.\n\n강조할 포인트:\n- 첫 번째 포인트\n- 두 번째 포인트"},
+       {"slide": 3, "text": "세 번째 슬라이드 메모 (2번은 건너뜀)"},
+       {"slide": 5, "text": "다섯 번째 슬라이드 메모"}
+     ]
+   }
+   ```
+
+   **형식 2**: 순서대로 적용 (모든 슬라이드)
+   ```json
+   {
+     "notes": [
+       "첫 번째 슬라이드 메모",
+       "두 번째 슬라이드 메모",
+       "세 번째 슬라이드 메모"
+     ]
+   }
+   ```
+
+4. **발표자 메모 업데이트**:
+   ```bash
+   python /Users/glen/Desktop/work/glen-claude-skills/.claude/skills/pptx/update-notes.py presentation.pptx notes.json
+   ```
+
+   출력 예시:
+   ```
+   ✓ 슬라이드 1 메모 업데이트 완료
+   ✓ 슬라이드 3 메모 업데이트 완료
+   ✓ 슬라이드 5 메모 업데이트 완료
+
+   저장 완료: presentation.pptx
+   ```
+
+5. **다른 파일로 저장** (선택사항):
+   ```bash
+   python /Users/glen/Desktop/work/glen-claude-skills/.claude/skills/pptx/update-notes.py presentation.pptx notes.json updated-presentation.pptx
+   ```
+
+### 발표자 메모 작성 팁
+
+- **개행**: `\n`을 사용하여 줄바꿈
+- **구조화**: 불릿 포인트(-, •)를 사용하여 핵심 포인트 나열
+- **분량**: 슬라이드당 3-5문장 권장 (발표 시간 기준 2-3분 분량)
+- **내용**: 슬라이드에 없는 배경 정보, 예시, 강조점 포함
+
+### 스크립트 전체 사용법
+
+```bash
+# 도움말
+python update-notes.py
+
+# 메모 추출
+python update-notes.py extract <pptx_file> [output.json]
+
+# 메모 업데이트
+python update-notes.py <pptx_file> <notes.json> [output.pptx]
+```
+
+### 주의사항
+
+- python-pptx가 설치된 가상환경을 활성화해야 합니다
+- 원본 파일을 덮어쓰기 전에 백업을 권장합니다
+- 슬라이드 번호는 1부터 시작합니다 (0-indexed가 아님)
 
 ---
 
