@@ -7,6 +7,9 @@ Claude Code 개인 스킬 저장소
 ```
 glen-claude-skills/
 ├── CLAUDE.md                    # 프로젝트 규칙 (Immutability, 보안 등)
+├── mcp-configs/                 # MCP 서버 설정 템플릿
+├── examples/                    # 설정 예시 (statusline 등)
+├── plugins/                     # 플러그인 가이드
 └── .claude/
     ├── settings.json            # 설정 + hooks
     ├── agents/                  # 에이전트 프롬프트
@@ -62,6 +65,32 @@ settings.json에 정의된 자동화 훅:
 - **PreToolUse**: dev 서버 tmux 강제, git push 리뷰, .md 생성 차단
 - **PostToolUse**: Prettier 자동 포맷, TypeScript 체크, console.log 경고
 - **Stop**: 세션 종료 전 console.log 감사
+
+## MCP 서버 설정
+
+`mcp-configs/mcp-servers.json`에 사용 가능한 MCP 서버 템플릿:
+
+| MCP | 용도 |
+|-----|------|
+| github | GitHub PR, 이슈, 레포 관리 |
+| firecrawl | 웹 스크래핑/크롤링 |
+| supabase | Supabase DB 작업 |
+| vercel | Vercel 배포 관리 |
+| cloudflare-* | Cloudflare Workers, 문서, 로그 |
+| clickhouse | ClickHouse 분석 쿼리 |
+| context7 | 실시간 문서 조회 |
+
+## 플러그인
+
+`plugins/README.md` 참고:
+
+```bash
+# 마켓플레이스 추가
+claude plugin marketplace add https://github.com/anthropics/claude-plugins-official
+
+# 플러그인 설치
+claude plugin install typescript-lsp@claude-plugins-official
+```
 
 ## 사용법
 
