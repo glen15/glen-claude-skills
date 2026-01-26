@@ -6,23 +6,24 @@
 
 ## 🎯 스킬 시스템 (Claude Code 표준)
 
-이 프로젝트는 **Claude Code 표준 로컬 스킬 시스템**을 사용합니다:
+이 프로젝트는 **Claude Code 표준 로컬 스킬 시스템**을 사용합니다.
 
 ### 구조
 
 ```
 .claude/skills/
-└── pptx/                    ← 스킬 디렉토리
-    ├── SKILL.md            ← 메인 파일 (필수)
-    ├── reference.md        ← 상세 가이드
-    └── examples.md         ← 실행 가능한 예제
+└── pptx/                    ← 스킬 디렉토리 (self-contained)
+    ├── SKILL.md             ← 메인 파일 (필수)
+    ├── package.json         ← Node.js 의존성
+    ├── lib/                 ← 빌더 API 라이브러리
+    └── tools/               ← Python 편집 도구
 ```
 
 ### 특징
 
 - **위치**: `.claude/skills/[skill-name]/`
-- **메인 파일**: `SKILL.md` (필수, 500줄 이하)
-- **지원 파일**: `reference.md`, `examples.md` (선택)
+- **메인 파일**: `SKILL.md` (필수)
+- **자체 포함**: 심링크 없이 모든 코드가 스킬 폴더 내에 포함
 - **인식**: Claude Code가 자동으로 디렉토리 인식
 - **호출**: `/[skill-name]` 명령어로 호출 가능
 
@@ -30,9 +31,15 @@
 
 ```
 ✅ pptx/
-   ├── SKILL.md          (스킬 개요)
-   ├── reference.md      (상세 기술 문서)
-   └── examples.md       (실행 가능한 예제)
+   ├── SKILL.md             (메인 스킬 파일)
+   ├── package.json
+   ├── lib/                 (빌더 API)
+   │   ├── index.js
+   │   ├── builder.js
+   │   └── themes/          (nxtcloud-v1, nxtcloud-v2)
+   └── tools/               (Python 편집 도구)
+       ├── ooxml.md
+       └── *.py
 ```
 
 ---
@@ -47,58 +54,47 @@ Claude Code에서:
 /pptx
 ```
 
-또는 스킬의 내용을 직접 참고하려면:
+### 프로그래밍 방식
 
-```
-cat .claude/skills/pptx.md
-```
+```javascript
+const { PresentationBuilder } = require('./.claude/skills/pptx/lib');
 
-### 스킬 추가
-
-새로운 스킬 `[skill-name]`을 추가하려면:
-
-```bash
-# 1. 스킬 개발 (skills/[skill-name]/)
-
-# 2. Claude Code에 등록
-cd .claude/skills
-ln -s ../../skills/[skill-name]/[main-file].md [skill-name].md
-
-# 3. 확인
-ls -la
+const builder = new PresentationBuilder('nxtcloud-v1');
+builder.addTitleSlide({ title: '제목', subtitle: '부제목' });
+await builder.save('output.pptx');
 ```
 
 ---
 
-## ⚙️ 설정 파일
+## ➕ 스킬 추가
 
-### settings.json
+새로운 스킬 `[skill-name]`을 추가하려면:
 
-```json
-{
-  "skills": {
-    "directory": "skills",
-    "enabled": true
-  }
-}
-```
+```bash
+# 1. 스킬 폴더 생성
+mkdir -p .claude/skills/[skill-name]
 
-- `directory`: 스킬 폴더 경로 (상대 경로)
-- `enabled`: 스킬 시스템 활성화
+# 2. SKILL.md 작성 (필수)
+cat > .claude/skills/[skill-name]/SKILL.md << 'EOF'
+---
+name: skill-name
+description: "스킬 설명"
+license: Proprietary
+disable-model-invocation: false
+user-invocable: true
+allowed-tools: Bash, Read, Write, Glob, Grep
+---
 
-### 커스텀 권한 추가 필요시
+# Skill Name
 
-`settings.local.json`을 수정:
+스킬 내용...
+EOF
 
-```json
-{
-  "permissions": {
-    "allow": [
-      "Bash(git:*)",
-      "Bash(npm:*)"
-    ]
-  }
-}
+# 3. 의존성 추가 (필요시)
+cd .claude/skills/[skill-name]
+npm init -y  # Node.js
+# 또는
+touch requirements.txt  # Python
 ```
 
 ---
@@ -109,22 +105,17 @@ ls -la
 glen-claude-skills/
 │
 ├── .claude/                    ← Claude Code 설정 (이 폴더)
-│   ├── settings.json          ← 스킬 시스템 설정
-│   ├── settings.local.json    ← 로컬 권한 설정
-│   ├── README.md              ← 이 파일
-│   └── skills/                ← Claude Code가 인식하는 스킬
-│       ├── pptx.md            ← PPTX 스킬 (심링크)
-│       └── [skill2].md        ← (추후 추가)
+│   ├── README.md               ← 이 파일
+│   └── skills/                 ← Claude Code가 인식하는 스킬
+│       └── pptx/               ← PPTX 스킬 (self-contained)
+│           ├── SKILL.md
+│           ├── package.json
+│           ├── lib/
+│           └── tools/
 │
-├── skills/                    ← 스킬 개발 저장소
-│   ├── pptx/                  ← 실제 PPTX 스킬 코드
-│   │   ├── cowork-pptx.md     ← 메인 스킬 문서
-│   │   ├── README-pptx.md
-│   │   ├── INSTALL.md
-│   │   └── ...
-│   └── [skill2]/              ← (추후 추가)
+├── contents/                   ← PPT 소스 콘텐츠
 │
-└── docs/                      ← 공통 문서
+└── docs/                       ← 공통 문서
     ├── getting-started.md
     ├── skill-template.md
     └── best-practices.md
@@ -143,56 +134,45 @@ glen-claude-skills/
    ↓
 3. /pptx 등으로 스킬 호출
    ↓
-4. 스킬 문서 및 기능 사용
+4. 스킬 기능 사용
 ```
 
 ### 새 스킬 개발
 
 ```
-1. skills/[skill-name]/ 폴더 생성
+1. .claude/skills/[skill-name]/ 폴더 생성
    ↓
-2. 스킬 개발 (README.md, INSTALL.md 등)
+2. SKILL.md 작성 (필수)
    ↓
-3. .claude/skills/에 심링크 생성
+3. 의존성 추가 (package.json 또는 requirements.txt)
    ↓
-4. Claude Code에서 테스트
+4. 라이브러리 코드 작성 (lib/)
    ↓
-5. README.md, SKILLS.md 업데이트
+5. Claude Code에서 테스트
 ```
 
 ---
 
-## 💡 팁
+## 💡 핵심 원칙
 
-### 심링크 확인
+### Self-Contained (자체 포함)
 
-```bash
-# 심링크 목록 보기
-ls -la .claude/skills/
+- **심링크 사용 금지**: 모든 코드가 스킬 폴더 내에 포함
+- **이식성**: 폴더만 복사하면 다른 프로젝트에서 바로 사용 가능
+- **독립성**: 각 스킬은 독립적으로 의존성 관리
 
-# 심링크 대상 확인
-readlink .claude/skills/pptx.md
-```
-
-### 스킬 수정
-
-스킬을 수정하면 자동으로 Claude Code에 반영됩니다:
-
-```bash
-# skills/pptx/cowork-pptx.md 수정
-# ↓
-# .claude/skills/pptx.md (심링크)가 자동으로 최신 버전 가리킴
-# ↓
-# Claude Code에서 수정 사항 즉시 확인 가능
-```
-
-### 스킬 버전 관리
-
-각 스킬의 버전은 독립적으로 관리됩니다:
+### 구조 규칙
 
 ```
-skills/pptx/package.json → version: "1.0.0"
-skills/pdf/package.json  → version: "1.0.0"
+✅ Good
+.claude/skills/pdf/
+├── SKILL.md
+├── package.json
+└── lib/
+
+❌ Bad
+.claude/skills/pdf.md  (심링크)
+skills/pdf/            (외부 폴더)
 ```
 
 ---
@@ -201,7 +181,6 @@ skills/pdf/package.json  → version: "1.0.0"
 
 - **[전체 프로젝트 README](../README.md)** - 프로젝트 개요
 - **[새 스킬 추가 가이드](../CONTRIBUTING.md)** - 스킬 개발 방법
-- **[스킬 목록](../SKILLS.md)** - 모든 스킬 정보
 - **[스킬 템플릿](../docs/skill-template.md)** - 새 스킬 템플릿
 - **[Best Practices](../docs/best-practices.md)** - 개발 가이드라인
 
@@ -211,23 +190,23 @@ skills/pdf/package.json  → version: "1.0.0"
 
 ### Claude Code가 스킬을 인식하지 못함
 
-1. **파일 확인**: `.claude/skills/*.md` 파일이 있는가?
-2. **심링크 확인**: `ls -la .claude/skills/` 에서 심링크가 보이는가?
-3. **설정 확인**: `settings.json`의 `skills.enabled`가 `true`인가?
+1. **폴더 확인**: `.claude/skills/[skill-name]/` 폴더가 있는가?
+2. **SKILL.md 확인**: `SKILL.md` 파일이 있는가?
+3. **Front Matter 확인**: SKILL.md에 올바른 Front Matter가 있는가?
 4. **Claude Code 재시작**: Claude Code를 다시 열기
 
-### 스킬 추가 후 인식 안 됨
+### 의존성 설치
 
 ```bash
-# 심링크 확인
-ls -la .claude/skills/
+# Node.js
+cd .claude/skills/pptx
+npm install
 
-# 심링크 재생성
-cd .claude/skills
-rm [skill-name].md
-ln -s ../../skills/[skill-name]/[main-file].md [skill-name].md
+# Python
+cd .claude/skills/pptx/tools
+pip install -r requirements.txt
 ```
 
 ---
 
-**마지막 업데이트**: 2026-01-25
+**마지막 업데이트**: 2026-01-26

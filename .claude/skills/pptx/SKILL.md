@@ -17,90 +17,318 @@ Create, edit, or analyze the contents of .pptx files when requested. A .pptx fil
 
 ---
 
-## CRITICAL: Read All Documentation First
+## CRITICAL: Read Documentation First
 
-**Before starting any presentation task**, read ALL relevant documentation files completely to understand the full workflow:
+**Before starting any presentation task**, read the relevant documentation:
 
-1. **For creating new presentations (JS 템플릿 방식, 권장)**: Read [`PPT-Design-Guide.md`](PPT-Design-Guide.md) and [`ppt-template-nxtcloud.js`](ppt-template-nxtcloud.js) as reference
-2. **For creating new presentations (HTML 방식)**: Read [`html2pptx.md`](html2pptx.md) and [`css.md`](css.md) in their entirety
-3. **For editing existing presentations**: Read [`ooxml.md`](ooxml.md) in its entirety
-4. **For template-based creation**: Read the relevant sections of this file plus [`css.md`](css.md)
+1. **For creating new presentations (빌더 API, 권장)**: 이 문서의 Quick Start 섹션 참조
+2. **For editing existing presentations**: Read [`tools/ooxml.md`](tools/ooxml.md) in its entirety
 
-**NEVER set any range limits when reading these files.** Understanding the complete workflow, constraints, and best practices before starting is essential for producing high-quality presentations. Partial knowledge leads to errors, inconsistent styling, and visual defects that require rework.
+Understanding the workflow and best practices before starting is essential for producing high-quality presentations.
 
 ---
 
-## Quick Start (JS 템플릿 방식 - 권장)
+## Quick Start (빌더 API 방식 - 권장)
 
-### NXT Cloud 스타일 PPT 생성
+### PresentationBuilder로 간단하게 PPT 생성
 
+```javascript
+// presentation.js
+const { PresentationBuilder } = require('/Users/glen/Desktop/work/glen-claude-skills/.claude/skills/pptx/lib');
+
+async function main() {
+  const builder = new PresentationBuilder('nxtcloud-v1');
+
+  builder.setMetadata({ title: 'My Presentation', author: 'NXT Cloud' });
+  builder.setFooter('My Presentation 2026');
+
+  // 타이틀 슬라이드
+  builder.addTitleSlide({
+    title: 'AWS IAM 정책 관리',
+    subtitle: '권한 관리의 모든 것',
+    badge: '2026 EDITION',
+    company: 'NXT Cloud',
+    team: 'Technical Training Team'
+  });
+
+  // 섹션 슬라이드
+  builder.addSectionSlide({
+    number: '01',
+    title: 'IAM 기본 개념',
+    subtitle: '사용자, 그룹, 역할, 정책의 이해',
+    bgColor: 'primary'
+  });
+
+  // 콘텐츠 슬라이드 (카드 4개)
+  builder.addContentSlide({
+    title: '핵심 구성 요소',
+    subtitle: 'User, Group, Role, Policy',
+    components: [
+      {
+        type: 'cards',
+        columns: 4,
+        items: [
+          { icon: '👤', title: 'User', desc: '개별 사용자 계정' },
+          { icon: '👥', title: 'Group', desc: 'User 논리적 집합' },
+          { icon: '🎭', title: 'Role', desc: '임시 권한 위임' },
+          { icon: '📋', title: 'Policy', desc: 'JSON 권한 문서' }
+        ]
+      }
+    ]
+  });
+
+  // 요약 슬라이드
+  builder.addSummarySlide({
+    label: '핵심 정리',
+    title: 'User + Role 모두 제어 필수',
+    points: [
+      { icon: '🔐', text: 'PassRole 제한이 핵심' },
+      { icon: '⚠️', text: '권한 상승 공격 방지' }
+    ]
+  });
+
+  await builder.save('output.pptx');
+  console.log('✅ 생성 완료: output.pptx');
+}
+
+main();
+```
+
+실행:
 ```bash
-# 1. Create content folder
-mkdir -p /Users/glen/Desktop/work/glen-claude-skills/contents/my-presentation
-cd /Users/glen/Desktop/work/glen-claude-skills/contents/my-presentation
-
-# 2. Create presentation.js based on the template
-# Reference: .claude/skills/pptx/ppt-template-nxtcloud.js
-# Design Guide: .claude/skills/pptx/PPT-Design-Guide.md
-
-# 3. Generate PPT
 NODE_PATH="$(npm root -g)" node presentation.js
-
-# 4. View result
 open output.pptx
 ```
 
-### JS 템플릿 방식의 장점
+### 빌더 API 장점
 
-- **정밀한 제어**: 픽셀 단위로 위치, 크기 조정 가능
-- **일관된 디자인**: 색상 팔레트, 폰트 크기 등 체계화
-- **다양한 레이아웃**: 타이틀, 섹션, 콘텐츠, 정리 슬라이드 등 유형별 템플릿
-- **시각적 요소**: 타임라인, 카드, 아이콘, 구분선 등 풍부한 요소
+- **선언적 데이터**: ~50줄 데이터로 프레젠테이션 생성
+- **테마 시스템**: 색상, 폰트, 레이아웃 자동 적용
+- **컴포넌트 기반**: 카드, 타임라인, 비교 박스 등 재사용 가능
+- **일관된 디자인**: 테마가 모든 요소에 일관성 보장
 
 ---
 
-## Quick Start (HTML 방식)
+## Creating a new PowerPoint presentation (빌더 API 방식 - 권장)
 
-### Run Example
+모듈화된 PresentationBuilder를 사용하여 선언적으로 프레젠테이션을 생성합니다. Claude가 콘텐츠 데이터만 정의하면 테마 시스템이 디자인을 자동 적용합니다.
 
-```bash
-cd /Users/glen/Desktop/work/glen-claude-skills/contents/example
-NODE_PATH="$(npm root -g)" node ../../.claude/skills/pptx/build.js
-open output.pptx
+### 라이브러리 구조
+
+```
+.claude/skills/pptx/lib/
+├── index.js              # 메인 진입점
+├── builder.js            # PresentationBuilder 클래스
+├── assets/               # 로고 등 정적 리소스
+└── themes/
+    ├── index.js          # 테마 레지스트리
+    ├── nxtcloud-v1/      # V1 테마 (중앙 정렬, 파란색)
+    │   ├── config.js     # 색상, 타이포그래피, 레이아웃
+    │   ├── components/   # 테마별 컴포넌트
+    │   └── layouts/      # 테마별 레이아웃
+    └── nxtcloud-v2/      # V2 테마 (좌측 정렬, 녹색)
+        ├── config.js
+        ├── components/
+        └── layouts/
 ```
 
-### Create New Presentation
+### 기본 사용법
 
-```bash
-# 1. Create content folder
-mkdir -p /Users/glen/Desktop/work/glen-claude-skills/contents/my-presentation
-cd /Users/glen/Desktop/work/glen-claude-skills/contents/my-presentation
+```javascript
+const { PresentationBuilder } = require('./.claude/skills/pptx/lib');
 
-# 2. Write HTML slides (slide1.html, slide2.html, ...)
-# Each file uses 960×540px layout
+async function main() {
+  const builder = new PresentationBuilder('nxtcloud-v1');
 
-# 3. Copy styles (optional)
-cp ../example/styles.css .
+  builder.setMetadata({ title: '제목', author: '작성자' });
+  builder.setFooter('프레젠테이션 이름');
 
-# 4. Generate PPT
-NODE_PATH="$(npm root -g)" node ../../.claude/skills/pptx/build.js
+  builder.addTitleSlide({ title: '메인 제목', subtitle: '부제목' });
+  builder.addSectionSlide({ number: '01', title: '섹션명' });
+  builder.addContentSlide({ title: '내용', components: [...] });
+  builder.addSummarySlide({ title: '요약', points: [...] });
 
-# 5. View result
-open output.pptx
+  await builder.save('output.pptx');
+}
 ```
+
+### 슬라이드 유형별 데이터 구조
+
+#### 1. 타이틀 슬라이드 (`addTitleSlide`)
+
+```javascript
+builder.addTitleSlide({
+  title: '메인 제목',           // 필수
+  subtitle: '부제목',           // 선택
+  badge: '2026 EDITION',       // 상단 배지
+  company: 'NXT Cloud',        // 회사명
+  team: 'Training Team',       // 팀명
+  audience: '대학생 • 교수'     // 대상
+});
+```
+
+#### 2. 섹션 슬라이드 (`addSectionSlide`)
+
+```javascript
+builder.addSectionSlide({
+  number: '01',                // 섹션 번호
+  title: '섹션 제목',           // 필수
+  subtitle: '섹션 설명',        // 선택
+  bgColor: 'primary'           // 배경색 (primary, navy 등)
+});
+```
+
+#### 3. 콘텐츠 슬라이드 (`addContentSlide`)
+
+```javascript
+builder.addContentSlide({
+  title: '슬라이드 제목',
+  subtitle: '부제목',
+  bgColor: 'white',            // 배경색
+  components: [                // 컴포넌트 배열
+    {
+      type: 'cards',
+      columns: 4,
+      items: [
+        { icon: '👤', title: 'User', desc: '설명...' },
+        { icon: '👥', title: 'Group', desc: '설명...' }
+      ]
+    }
+  ]
+});
+```
+
+#### 4. 요약 슬라이드 (`addSummarySlide`)
+
+```javascript
+builder.addSummarySlide({
+  label: '핵심 정리',
+  title: '핵심 메시지',
+  bgColor: 'navy',
+  points: [
+    { icon: '🔐', text: '포인트 1' },
+    { icon: '⚠️', text: '포인트 2' }
+  ]
+});
+```
+
+### 사용 가능한 컴포넌트
+
+#### cards (카드 그리드)
+```javascript
+{ type: 'cards', columns: 4, cardHeight: 2.5, items: [...] }
+```
+
+#### bullets (불릿 리스트)
+```javascript
+{ type: 'bullets', items: ['항목1', '항목2'], icon: '•' }
+```
+
+#### timeline (타임라인)
+```javascript
+{
+  type: 'timeline',
+  items: [
+    { year: '1980', title: 'PC 시대', description: '설명...' },
+    { year: '2006', title: '클라우드', description: '...' }
+  ]
+}
+```
+
+#### comparison (좌우 비교)
+```javascript
+{
+  type: 'comparison',
+  left: { title: '이전', items: ['항목1', '항목2'], bgColor: 'slate100' },
+  right: { title: '이후', items: ['항목1', '항목2'], bgColor: 'blue100' }
+}
+```
+
+#### vs (VS 비교)
+```javascript
+{
+  type: 'vs',
+  left: { title: '인간 vs AI', bgColor: 'red100', quote: '경쟁' },
+  right: { title: '인간 + AI', bgColor: 'green100', checkmark: true }
+}
+```
+
+#### text (텍스트)
+```javascript
+{ type: 'text', text: '텍스트 내용', bold: true, color: 'primary' }
+```
+
+#### box (강조 박스)
+```javascript
+{ type: 'box', text: '강조 메시지', bgColor: 'primary', color: 'white' }
+```
+
+### 데이터 기반 빌드
+
+슬라이드 데이터 배열로 한 번에 생성:
+
+```javascript
+const { createPresentation } = require('./.claude/skills/pptx/lib');
+
+const slides = [
+  { type: 'title', title: 'Hello', subtitle: 'World' },
+  { type: 'section', number: '01', title: 'Intro' },
+  { type: 'content', title: 'Details', components: [...] },
+  { type: 'summary', title: '요약', points: [...] }
+];
+
+const builder = createPresentation(slides, {
+  theme: 'nxtcloud-v1',
+  footer: 'My Presentation',
+  metadata: { title: 'My PPT', author: 'Glen' }
+});
+
+await builder.save('output.pptx');
+```
+
+### 커스텀 슬라이드 (고급)
+
+빈 슬라이드에 컴포넌트 직접 추가:
+
+```javascript
+const slide = builder.addBlankSlide({ title: '커스텀 슬라이드' });
+
+builder.addCards(slide, {
+  items: [...],
+  startY: 2.0,
+  cardHeight: 2.0
+});
+
+builder.addTimeline(slide, {
+  items: [...],
+  y: 4.0
+});
+```
+
+### 테마 색상 참조
+
+`nxtcloud-v1` 테마에서 사용 가능한 색상:
+
+| 이름 | 용도 |
+|------|------|
+| `navy` | 어두운 배경 |
+| `primary` | 주요 강조색 (파랑) |
+| `accent` | 포인트 색상 (하늘색) |
+| `white` | 밝은 배경 |
+| `slate100` ~ `slate900` | 중립 그레이 |
+| `amber500`, `green500`, `purple500`, `red500` | 시맨틱 색상 |
 
 ---
 
-## Creating a new PowerPoint presentation (JS 템플릿 방식 - 권장)
+## Creating a new PowerPoint presentation (JS 템플릿 방식 - 고급)
 
 NXT Cloud 스타일의 고품질 프레젠테이션을 생성하는 권장 워크플로우입니다. pptxgenjs를 직접 사용하여 정밀한 제어가 가능합니다.
 
-### 필수 문서
+### 테마 참조
 
-시작하기 전에 반드시 읽어야 할 파일들:
-
-1. **[`PPT-Design-Guide.md`](PPT-Design-Guide.md)** - 색상 팔레트, 폰트 크기, 레이아웃 가이드
-2. **[`ppt-template-nxtcloud.js`](ppt-template-nxtcloud.js)** - 실제 구현 예제 (참고용, 전체를 읽을 필요 없이 필요한 슬라이드 유형만 참조)
+테마별 색상, 타이포그래피, 레이아웃 설정:
+- `lib/themes/nxtcloud-v1/config.js` - V1 테마 (중앙 정렬, 파란색)
+- `lib/themes/nxtcloud-v2/config.js` - V2 테마 (좌측 정렬, 녹색)
 
 ### 워크플로우
 
@@ -109,7 +337,7 @@ NXT Cloud 스타일의 고품질 프레젠테이션을 생성하는 권장 워�
    - 섹션 구성 및 슬라이드 개요 작성
    - 각 슬라이드의 레이아웃 유형 결정
 
-2. **색상 팔레트 설정** (PPT-Design-Guide.md 참조):
+2. **색상 팔레트 설정** (테마 config.js 참조):
    ```javascript
    const colors = {
      navy: "0f172a",      // 섹션 정리 배경
@@ -158,9 +386,9 @@ NXT Cloud 스타일의 고품질 프레젠테이션을 생성하는 권장 워�
      pptx.title = "프레젠테이션 제목";
 
      // 색상 정의
-     const colors = { /* PPT-Design-Guide.md 참조 */ };
+     const colors = { /* lib/themes/nxtcloud-v1/config.js 참조 */ };
 
-     // 슬라이드 생성 (ppt-template-nxtcloud.js 참조)
+     // 슬라이드 생성
      let slide1 = pptx.addSlide();
      slide1.background = { color: colors.navy };
      // ...
@@ -222,9 +450,9 @@ Use raw XML access for: comments, speaker notes, slide layouts, animations, desi
 
 #### Unpacking a file
 
-`python ooxml/scripts/unpack.py <office_file> <output_dir>`
-
-**Note**: The unpack.py script is located at `skills/public/pptx/ooxml/scripts/unpack.py` relative to the project root. If the script doesn't exist at this path, use `find . -name "unpack.py"` to locate it.
+```bash
+mkdir -p unpacked && unzip -q presentation.pptx -d unpacked
+```
 
 #### Key file structures
 
@@ -247,189 +475,64 @@ Use raw XML access for: comments, speaker notes, slide layouts, animations, desi
 
 ---
 
-## Creating a new PowerPoint presentation **without a template**
-
-When creating a new PowerPoint presentation from scratch, use the **html2pptx** workflow to convert HTML slides to PowerPoint with accurate positioning.
-
-### Workflow
-
-1. **Read documentation**: Read [`html2pptx.md`](html2pptx.md) and [`css.md`](css.md) completely (see "CRITICAL: Read All Documentation First" section above)
-
-2. **Plan the presentation**: Follow html2pptx.md "Design Philosophy" section for:
-   - Aesthetic direction and bold design choices
-   - Color palette selection (see "Creating your color palette")
-   - Typography strategy
-   - Write DETAILED outline with slide layouts and presenter notes (1-3 sentences per slide)
-
-3. **Set CSS variables**: Override CSS variables in a shared `.css` file for colors, typography, and spacing (see css.md "Design System Variables")
-
-4. **Create HTML slides** (960px × 540px for 16:9): Follow html2pptx.md for:
-   - Slide layout zones (title, content, footnote)
-   - Critical text rules (proper HTML tags)
-   - Supported elements and styling
-
-5. Create and run a JavaScript file using the [`html2pptx`](./html2pptx) library to convert HTML slides to PowerPoint and save the presentation
-
-   - Run with: `NODE_PATH="$(npm root -g)" node your-script.js 2>&1`
-   - Use the `html2pptx` function to process each HTML file
-   - Add charts and tables to placeholder areas using PptxGenJS API
-   - Save the presentation using `pptx.writeFile()`
-
-   - **⚠️ CRITICAL:** Your script MUST follow this example structure. Think aloud before writing the script to make sure that you correctly use the APIs. Do NOT call `pptx.addSlide`.
-
-   ```javascript
-   const pptxgen = require("pptxgenjs");
-   const { html2pptx } = require("./html2pptx");
-
-   // Create a new pptx presentation
-   const pptx = new pptxgen();
-   pptx.layout = "LAYOUT_16x9"; // Must match HTML body dimensions
-   pptx.defineLayout({ name: "LAYOUT_16x9", width: 10, height: 5.625 });
-
-   // Add an HTML-only slide
-   await html2pptx("slide1.html", pptx);
-
-   // Add a HTML slide with chart placeholders
-   const { slide: slide2, placeholders } = await html2pptx("slide2.html", pptx);
-   slide2.addChart(pptx.ChartTypes.line, chartData, placeholders[0]);
-
-   // Save the presentation
-   await pptx.writeFile({ fileName: "output.pptx" });
-   ```
-
-6. **Visual validation**: Convert to images and inspect for layout issues
-   - Convert PPTX to PDF first: `soffice --headless --convert-to pdf output.pptx`
-   - Then convert PDF to images: `pdftoppm -jpeg -r 150 output.pdf slide`
-     - This creates files like `slide-1.jpg`, `slide-2.jpg`, etc.
-   - Read each generated image file and carefully examine for:
-     - **Text cutoff**: Text being cut off by header bars, shapes, or slide edges
-     - **Text overlap**: Text overlapping with other text or shapes
-     - **Positioning issues**: Content too close to slide boundaries or other elements
-     - **Contrast issues**: Insufficient contrast between text and backgrounds
-     - **Alignment problems**: Elements not properly aligned with each other
-     - **Visual hierarchy**: Important content properly emphasized
-   - **CRITICAL: All slides MUST pass these validation checks before delivering to the user.** Do not skip this step or deliver presentations with visual defects.
-   - If issues found, fix them in the following order of priority:
-     1. **Increase margins** - Add more padding/spacing around problematic elements
-     2. **Adjust font size** - Reduce text size to fit within available space
-     3. **Rethink the layout entirely** - If the above fixes don't work, redesign the slide layout
-   - Regenerate the presentation after making changes
-   - Repeat until all slides are visually correct
-
----
-
 ## Editing an existing PowerPoint presentation
 
 To edit slides in an existing PowerPoint presentation, work with the raw Office Open XML (OOXML) format. This involves unpacking the .pptx file, editing the XML content, and repacking it.
 
 ### Workflow
 
-1. **Read documentation**: Read [`ooxml.md`](ooxml.md) completely (see "CRITICAL: Read All Documentation First" section above)
-2. Unpack the presentation: `python ooxml/scripts/unpack.py <office_file> <output_dir>`
-3. Edit the XML files (primarily `ppt/slides/slide{N}.xml` and related files)
-4. **CRITICAL**: Validate immediately after each edit: `python ooxml/scripts/validate.py <dir> --original <file>`
-5. Pack the final presentation: `python ooxml/scripts/pack.py <input_directory> <office_file>`
+1. **Read documentation**: Read [`tools/ooxml.md`](tools/ooxml.md) completely
+2. **Unpack** the presentation:
+   ```bash
+   mkdir -p unpacked && unzip -q presentation.pptx -d unpacked
+   ```
+3. **Edit** the XML files (primarily `ppt/slides/slide{N}.xml` and related files)
+4. **Repack** the presentation:
+   ```bash
+   cd unpacked && zip -q -r ../output.pptx . && cd ..
+   ```
+
+### Python 도구 (고급)
+
+`tools/` 디렉토리에 편집 도구가 있습니다:
+
+- `inventory.py` - 텍스트 추출
+- `replace.py` - 텍스트 교체
+- `rearrange.py` - 슬라이드 재배치
+- `thumbnail.py` - 썸네일 생성
+
+```bash
+# 의존성 설치
+pip install -r tools/requirements.txt
+
+# 텍스트 추출
+python tools/inventory.py presentation.pptx output.json
+
+# 텍스트 교체
+python tools/replace.py input.pptx replacements.json output.pptx
+```
 
 ---
 
-## Modifying Speaker Notes Only (발표자 메모 수정)
+## Modifying Speaker Notes (발표자 메모 수정)
 
-기존 PPTX 파일의 발표자 메모만 수정할 때 사용합니다. 전체 프레젠테이션을 다시 생성하지 않고 메모만 업데이트합니다.
-
-### 사용 시나리오
-
-- 처음 생성 시 슬라이드와 발표자 메모가 함께 만들어진 후
-- 사용자가 발표자 메모를 더 상세하게 작성해달라고 요청할 때
-- 기존 메모를 수정하거나 보완할 때
+발표자 메모는 OOXML 편집으로 수정할 수 있습니다. 메모는 `ppt/notesSlides/notesSlide{N}.xml` 파일에 저장됩니다.
 
 ### 워크플로우
 
-1. **가상환경 활성화** (python-pptx 사용):
-   ```bash
-   source /Users/glen/Desktop/work/glen-claude-skills/.claude/skills/pptx/venv/bin/activate
-   ```
-
-2. **기존 메모 추출** (선택사항):
-   ```bash
-   python /Users/glen/Desktop/work/glen-claude-skills/.claude/skills/pptx/update-notes.py extract presentation.pptx notes-current.json
-   ```
-
-   출력 예시:
-   ```
-   슬라이드 1: 250 글자
-   슬라이드 2: 180 글자
-   ...
-   추출 완료: notes-current.json
-   ```
-
-3. **새 발표자 메모 JSON 작성** (`notes.json`):
-
-   **형식 1**: 슬라이드 번호 지정
-   ```json
-   {
-     "notes": [
-       {"slide": 1, "text": "첫 번째 슬라이드 발표자 메모입니다.\n\n강조할 포인트:\n- 첫 번째 포인트\n- 두 번째 포인트"},
-       {"slide": 3, "text": "세 번째 슬라이드 메모 (2번은 건너뜀)"},
-       {"slide": 5, "text": "다섯 번째 슬라이드 메모"}
-     ]
-   }
-   ```
-
-   **형식 2**: 순서대로 적용 (모든 슬라이드)
-   ```json
-   {
-     "notes": [
-       "첫 번째 슬라이드 메모",
-       "두 번째 슬라이드 메모",
-       "세 번째 슬라이드 메모"
-     ]
-   }
-   ```
-
-4. **발표자 메모 업데이트**:
-   ```bash
-   python /Users/glen/Desktop/work/glen-claude-skills/.claude/skills/pptx/update-notes.py presentation.pptx notes.json
-   ```
-
-   출력 예시:
-   ```
-   ✓ 슬라이드 1 메모 업데이트 완료
-   ✓ 슬라이드 3 메모 업데이트 완료
-   ✓ 슬라이드 5 메모 업데이트 완료
-
-   저장 완료: presentation.pptx
-   ```
-
-5. **다른 파일로 저장** (선택사항):
-   ```bash
-   python /Users/glen/Desktop/work/glen-claude-skills/.claude/skills/pptx/update-notes.py presentation.pptx notes.json updated-presentation.pptx
-   ```
-
-### 발표자 메모 작성 팁
-
-- **개행**: `\n`을 사용하여 줄바꿈
-- **구조화**: 불릿 포인트(-, •)를 사용하여 핵심 포인트 나열
-- **분량**: 슬라이드당 3-5문장 권장 (발표 시간 기준 2-3분 분량)
-- **내용**: 슬라이드에 없는 배경 정보, 예시, 강조점 포함
-
-### 스크립트 전체 사용법
-
 ```bash
-# 도움말
-python update-notes.py
+# 1. PPTX 압축 해제
+mkdir -p unpacked && unzip -q presentation.pptx -d unpacked
 
-# 메모 추출
-python update-notes.py extract <pptx_file> [output.json]
+# 2. 발표자 메모 파일 확인
+ls unpacked/ppt/notesSlides/
 
-# 메모 업데이트
-python update-notes.py <pptx_file> <notes.json> [output.pptx]
+# 3. 메모 편집 (XML 직접 수정)
+# <a:t> 태그 안의 텍스트를 수정
+
+# 4. 다시 압축
+cd unpacked && zip -q -r ../output.pptx . && cd ..
 ```
-
-### 주의사항
-
-- python-pptx가 설치된 가상환경을 활성화해야 합니다
-- 원본 파일을 덮어쓰기 전에 백업을 권장합니다
-- 슬라이드 번호는 1부터 시작합니다 (0-indexed가 아님)
 
 ---
 
@@ -443,7 +546,7 @@ To create a presentation that follows an existing template's design, duplicate a
 
    - Extract text: `python -m markitdown template.pptx > template-content.md`
    - Read `template-content.md` completely to understand the template contents
-   - Create thumbnail grids: `python scripts/thumbnail.py template.pptx`
+   - Create thumbnail grids: `python tools/thumbnail.py template.pptx`
    - See [Creating Thumbnail Grids](#creating-thumbnail-grids) section for more details
 
 2. **Analyze template and save inventory to a file**:
@@ -506,9 +609,9 @@ To create a presentation that follows an existing template's design, duplicate a
 
 4. **Duplicate, reorder, and delete slides using `rearrange.py`**:
 
-   - Use the `scripts/rearrange.py` script to create a new presentation with slides in the desired order:
+   - Use the `tools/rearrange.py` script to create a new presentation with slides in the desired order:
      ```bash
-     python scripts/rearrange.py template.pptx working.pptx 0,34,34,50,52
+     python tools/rearrange.py template.pptx working.pptx 0,34,34,50,52
      ```
    - The script handles duplicating repeated slides, deleting unused slides, and reordering automatically
    - Slide indices are 0-based (first slide is 0, second is 1, etc.)
@@ -518,7 +621,7 @@ To create a presentation that follows an existing template's design, duplicate a
 
    - **Run inventory extraction**:
      ```bash
-     python scripts/inventory.py working.pptx text-inventory.json
+     python tools/inventory.py working.pptx text-inventory.json
      ```
    - **Read text-inventory.json** completely to understand all shapes and their properties
 
@@ -652,7 +755,7 @@ To create a presentation that follows an existing template's design, duplicate a
 7. **Apply replacements using the `replace.py` script**
 
    ```bash
-   python scripts/replace.py working.pptx replacement-text.json output.pptx
+   python tools/replace.py working.pptx replacement-text.json output.pptx
    ```
 
    The script will:
@@ -685,14 +788,14 @@ To create a presentation that follows an existing template's design, duplicate a
 To create visual thumbnail grids of PowerPoint slides for quick analysis and reference:
 
 ```bash
-python scripts/thumbnail.py template.pptx [output_prefix]
+python tools/thumbnail.py template.pptx [output_prefix]
 ```
 
 **Features**:
 
 - Creates: `thumbnails.jpg` (or `thumbnails-1.jpg`, `thumbnails-2.jpg`, etc. for large decks)
 - Default: 5 columns, max 30 slides per grid (5×6)
-- Custom prefix: `python scripts/thumbnail.py template.pptx my-grid`
+- Custom prefix: `python tools/thumbnail.py template.pptx my-grid`
   - Note: The output prefix should include the path if you want output in a specific directory (e.g., `workspace/my-grid`)
 - Adjust columns: `--cols 4` (range: 3-6, affects slides per grid)
 - Grid limits: 3 cols = 12 slides/grid, 4 cols = 20, 5 cols = 30, 6 cols = 42
@@ -709,10 +812,10 @@ python scripts/thumbnail.py template.pptx [output_prefix]
 
 ```bash
 # Basic usage
-python scripts/thumbnail.py presentation.pptx
+python tools/thumbnail.py presentation.pptx
 
 # Combine options: custom name, columns
-python scripts/thumbnail.py template.pptx analysis --cols 4
+python tools/thumbnail.py template.pptx analysis --cols 4
 ```
 
 ---
@@ -761,17 +864,22 @@ pdftoppm -jpeg -r 150 -f 2 -l 5 template.pdf slide  # Converts only pages 2-5
 
 ## Dependencies
 
-Required dependencies (should already be installed):
+### Node.js (빌더 API)
 
-- **markitdown**: `pip install "markitdown[pptx]"` (for text extraction from presentations)
-- **pptxgenjs**: `npm install -g pptxgenjs` (for creating presentations via html2pptx)
-- **playwright**: `npm install -g playwright` (for HTML rendering in html2pptx)
-- **react-icons**: `npm install -g react-icons react react-dom` (for icons in SVG format)
-- **LibreOffice**: For PDF conversion (required for visual validation step)
-  - macOS: `brew install --cask libreoffice`
-  - Linux: `sudo apt-get install libreoffice`
-- **Poppler**: `sudo apt-get install poppler-utils` (for pdftoppm to convert PDF to images)
-- **defusedxml**: `pip install defusedxml` (for secure XML parsing)
+```bash
+cd .claude/skills/pptx && npm install
+```
+
+### Python (편집 도구, 선택사항)
+
+```bash
+pip install -r tools/requirements.txt
+```
+
+### 시스템 도구 (선택사항)
+
+- **LibreOffice**: PDF 변환 - `brew install --cask libreoffice` (macOS)
+- **Poppler**: 이미지 변환 - `brew install poppler` (macOS)
 
 ---
 

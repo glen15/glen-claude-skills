@@ -4,153 +4,95 @@
 
 ---
 
-## 📋 파일 템플릿
+## 📋 Claude Code 표준 구조
 
-### 1. README.md
+```
+.claude/skills/[skill-name]/
+├── SKILL.md              ← 필수: 메인 스킬 파일
+├── package.json          ← 선택: Node.js 의존성
+├── requirements.txt      ← 선택: Python 의존성
+├── lib/                  ← 선택: 라이브러리 코드
+└── tools/                ← 선택: 유틸리티 도구
+```
+
+---
+
+## 📝 파일 템플릿
+
+### 1. SKILL.md (필수)
 
 ```markdown
-# [SKILL_NAME] 스킬
+---
+name: skill-name
+description: "스킬이 하는 일을 한 줄로"
+license: Proprietary
+disable-model-invocation: false
+user-invocable: true
+allowed-tools: Bash, Read, Write, Glob, Grep
+---
 
-한 줄 설명: [이 스킬이 무엇을 하는가]
+# [Skill Name]
 
-## 🎯 기능
+한 줄 설명: 이 스킬은 [무엇]을 [어떻게] 합니다.
 
-- 기능 1
-- 기능 2
-- 기능 3
-
-## 🚀 빠른 시작
+## Quick Start
 
 ### 설치
 
 \`\`\`bash
 cd .claude/skills/[skill-name]
-bash install-mac.sh       # macOS
-# 또는
-sudo bash install-linux.sh  # Linux
+npm install       # Node.js 의존성
+pip install -r requirements.txt  # Python 의존성 (해당시)
 \`\`\`
 
 ### 기본 사용법
 
-\`\`\`bash
-# 예제 1
-[command example 1]
+\`\`\`javascript
+const { MainClass } = require('./.claude/skills/[skill-name]/lib');
 
-# 예제 2
-[command example 2]
+const instance = new MainClass();
+// 사용 예제...
 \`\`\`
 
-## 📚 상세 가이드
+## 기능
 
-더 자세한 정보는:
-- **INSTALL.md** - 상세 설치 가이드
-- **[추가 가이드 문서]** - 심화 내용
+- 기능 1: 설명
+- 기능 2: 설명
+- 기능 3: 설명
 
-## 🔧 의존성
+## API Reference
 
-- Python 3.7+ (또는 해당 버전)
-- Node.js 14+ (필요시)
-- [추가 도구]
+### MainClass
 
-## 📝 사용 사례
-
-- 사용 사례 1
-- 사용 사례 2
-
-## 🤝 문제 해결
-
-일반적인 문제와 해결책:
-
-### 문제 1: [문제 설명]
-
-**해결책:**
-\`\`\`bash
-[해결 명령]
+\`\`\`javascript
+const instance = new MainClass(options);
 \`\`\`
 
-### 문제 2: [문제 설명]
+**옵션:**
+- `option1` (string): 설명
+- `option2` (boolean): 설명
 
-**해결책:**
-[해결 방법]
+**메서드:**
+- `method1(arg)`: 설명
+- `method2(arg)`: 설명
 
----
+## 예제
 
-**마지막 업데이트**: YYYY-MM-DD
-**버전**: 1.0
-```
+### 예제 1: 기본 사용
 
-### 2. INSTALL.md
-
-```markdown
-# 설치 가이드
-
-## 자동 설치 (권장)
-
-### macOS
-
-\`\`\`bash
-bash install-mac.sh
+\`\`\`javascript
+// 코드 예제
 \`\`\`
 
-### Linux (Ubuntu/Debian)
+### 예제 2: 고급 사용
 
-\`\`\`bash
-sudo bash install-linux.sh
+\`\`\`javascript
+// 코드 예제
 \`\`\`
 
-## 수동 설치
+## 문제 해결
 
-### 단계 1: Python 의존성
-
-\`\`\`bash
-pip install -r requirements.txt
-\`\`\`
-
-의존성:
-- package1: [설명]
-- package2: [설명]
-
-### 단계 2: Node.js 의존성 (필요시)
-
-\`\`\`bash
-npm install -g [package]
-\`\`\`
-
-### 단계 3: 시스템 도구 설치 (필요시)
-
-**macOS:**
-\`\`\`bash
-brew install [tool]
-\`\`\`
-
-**Linux:**
-\`\`\`bash
-sudo apt-get install [tool]
-\`\`\`
-
-## ✅ 설치 확인
-
-\`\`\`bash
-# 모든 의존성 확인
-python --version
-node --version
-[도구] --version
-\`\`\`
-
-## 🔧 문제 해결
-
-### 문제: [설치 오류]
-
-**원인:** [원인 설명]
-
-**해결책:**
-\`\`\`bash
-[해결 명령]
-\`\`\`
-
-### 문제: [권한 오류]
-
-**원인:** [원인 설명]
+### 문제: [문제 설명]
 
 **해결책:**
 \`\`\`bash
@@ -159,243 +101,193 @@ node --version
 
 ---
 
+**버전**: 1.0.0
 **마지막 업데이트**: YYYY-MM-DD
 ```
 
-### 3. install-mac.sh
+### 2. package.json (Node.js 스킬)
 
-```bash
-#!/bin/bash
-# [SKILL_NAME] 의존성 설치 스크립트 (macOS)
-
-set -e
-
-echo "🚀 [SKILL_NAME] 의존성 설치 시작"
-echo "================================================"
-
-# Color codes
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-
-# 1️⃣ Python 의존성
-echo -e "${BLUE}1️⃣  Python 의존성 설치 중...${NC}"
-pip install -r requirements.txt
-echo -e "${GREEN}✓ Python 패키지 설치 완료${NC}\n"
-
-# 2️⃣ Node.js 의존성 (필요시)
-echo -e "${BLUE}2️⃣  Node.js 의존성 설치 중...${NC}"
-npm install -g [package]
-echo -e "${GREEN}✓ Node.js 패키지 설치 완료${NC}\n"
-
-# 3️⃣ 시스템 도구 (필요시)
-echo -e "${BLUE}3️⃣  시스템 도구 설치 확인 중...${NC}"
-if ! command -v [tool] &> /dev/null; then
-    echo -e "${YELLOW}⚠️  [Tool]을 찾을 수 없습니다.${NC}"
-    echo "    설치하시겠습니까? (y/n)"
-    read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-        brew install [tool]
-        echo -e "${GREEN}✓ [Tool] 설치 완료${NC}"
-    else
-        echo -e "${YELLOW}⏭️  [Tool] 설치 건너뜀${NC}"
-    fi
-else
-    echo -e "${GREEN}✓ [Tool] 설치됨${NC}"
-fi
-echo
-
-# 최종 확인
-echo -e "${BLUE}최종 확인${NC}"
-echo "================================================"
-
-echo -n "Python [package]: "
-python -c "import [package]; print([package].__version__)" 2>/dev/null && echo -e "${GREEN}✓${NC}" || echo -e "❌"
-
-echo -n "[Tool]: "
-command -v [tool] &> /dev/null && echo -e "${GREEN}✓${NC}" || echo -e "${YELLOW}선택 사항${NC}"
-
-echo
-echo -e "${GREEN}================================================${NC}"
-echo -e "${GREEN}✨ 설치 완료!${NC}"
-echo -e "${GREEN}================================================${NC}"
-echo
-echo "다음 단계:"
-echo "1. [스킬 사용 설명]"
-echo "2. [명령 예제]"
-echo
-echo "자세한 사용법은 README.md를 참고하세요."
+```json
+{
+  "name": "skill-name",
+  "version": "1.0.0",
+  "description": "스킬 설명",
+  "author": "Glen",
+  "license": "Proprietary",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "node -e \"const {MainClass}=require('./lib'); console.log('OK');\""
+  },
+  "keywords": [
+    "skill",
+    "claude-code"
+  ],
+  "dependencies": {
+    "package1": "^1.0.0",
+    "package2": "^2.0.0"
+  }
+}
 ```
 
-### 4. install-linux.sh
-
-```bash
-#!/bin/bash
-# [SKILL_NAME] 의존성 설치 스크립트 (Linux)
-
-set -e
-
-echo "🚀 [SKILL_NAME] 의존성 설치 시작 (Linux)"
-echo "================================================"
-
-# Color codes
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-
-# Root 권한 확인
-if [[ $EUID -ne 0 ]]; then
-   echo -e "${YELLOW}⚠️  이 스크립트는 관리자 권한이 필요합니다.${NC}"
-   echo "    다시 실행하세요: sudo bash install-linux.sh"
-   exit 1
-fi
-
-# 1️⃣ Python 의존성
-echo -e "${BLUE}1️⃣  Python 의존성 설치 중...${NC}"
-pip install -r requirements.txt
-echo -e "${GREEN}✓ Python 패키지 설치 완료${NC}\n"
-
-# 2️⃣ Node.js 의존성 (필요시)
-echo -e "${BLUE}2️⃣  Node.js 의존성 설치 중...${NC}"
-npm install -g [package]
-echo -e "${GREEN}✓ Node.js 패키지 설치 완료${NC}\n"
-
-# 3️⃣ 시스템 도구 (필요시)
-echo -e "${BLUE}3️⃣  시스템 도구 설치 확인 중...${NC}"
-if ! command -v [tool] &> /dev/null; then
-    echo -e "${YELLOW}⚠️  [Tool]을 찾을 수 없습니다.${NC}"
-    echo "    설치하시겠습니까? (y/n)"
-    read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]; then
-        apt-get update
-        apt-get install -y [tool]
-        echo -e "${GREEN}✓ [Tool] 설치 완료${NC}"
-    else
-        echo -e "${YELLOW}⏭️  [Tool] 설치 건너뜀${NC}"
-    fi
-else
-    echo -e "${GREEN}✓ [Tool] 설치됨${NC}"
-fi
-echo
-
-# 최종 확인
-echo -e "${BLUE}최종 확인${NC}"
-echo "================================================"
-
-echo -n "Python [package]: "
-python -c "import [package]; print([package].__version__)" 2>/dev/null && echo -e "${GREEN}✓${NC}" || echo -e "❌"
-
-echo -n "[Tool]: "
-command -v [tool] &> /dev/null && echo -e "${GREEN}✓${NC}" || echo -e "${YELLOW}선택 사항${NC}"
-
-echo
-echo -e "${GREEN}================================================${NC}"
-echo -e "${GREEN}✨ 설치 완료!${NC}"
-echo -e "${GREEN}================================================${NC}"
-echo
-echo "다음 단계:"
-echo "1. [스킬 사용 설명]"
-echo "2. [명령 예제]"
-echo
-echo "자세한 사용법은 README.md를 참고하세요."
-```
-
-### 5. requirements.txt
+### 3. requirements.txt (Python 도구)
 
 ```
 # Python 의존성
 # 형식: package-name>=version
 
-package1>=1.0.0
-package2>=2.0.0
+package1>=1.0.0  # 설명
+package2>=2.0.0  # 설명
 ```
 
-### 6. package.json
+### 4. lib/index.js (메인 진입점)
 
-```json
-{
-  "name": "[skill-name]",
-  "version": "1.0.0",
-  "description": "[One line description]",
-  "author": "Glen",
-  "license": "Proprietary",
-  "globalDependencies": {
-    "package1": "^1.0.0",
-    "package2": "^2.0.0"
-  },
-  "scripts": {
-    "install-global": "npm install -g package1 package2"
-  },
-  "keywords": ["skill", "claude-code"]
+```javascript
+/**
+ * [Skill Name] - 스킬 설명
+ */
+
+const MainClass = require('./main-class');
+
+module.exports = {
+  MainClass
+};
+```
+
+### 5. lib/main-class.js (메인 클래스)
+
+```javascript
+/**
+ * MainClass - 주요 기능 클래스
+ */
+class MainClass {
+  constructor(options = {}) {
+    this.option1 = options.option1 || 'default';
+    this.option2 = options.option2 || false;
+  }
+
+  /**
+   * 메서드 설명
+   * @param {string} arg - 인자 설명
+   * @returns {Promise<Object>} 반환값 설명
+   */
+  async method1(arg) {
+    // 구현
+  }
+
+  /**
+   * 메서드 설명
+   * @param {Object} data - 데이터 객체
+   */
+  method2(data) {
+    // 구현
+  }
 }
+
+module.exports = MainClass;
+```
+
+---
+
+## ✅ 스킬 추가 체크리스트
+
+### 1단계: 폴더 생성
+
+```bash
+mkdir -p .claude/skills/[skill-name]
+cd .claude/skills/[skill-name]
+```
+
+### 2단계: 필수 파일 생성
+
+```bash
+touch SKILL.md
+```
+
+### 3단계: 선택 파일 생성 (필요시)
+
+```bash
+# Node.js 스킬
+touch package.json
+mkdir lib
+touch lib/index.js
+
+# Python 도구 포함시
+touch requirements.txt
+mkdir tools
+```
+
+### 4단계: 테스트
+
+```bash
+# Node.js 의존성 설치
+npm install
+
+# Python 의존성 설치 (해당시)
+pip install -r requirements.txt
+
+# 테스트 실행
+npm test
+```
+
+### 5단계: 검증
+
+- [ ] `SKILL.md` Front Matter 포함
+- [ ] 의존성 버전 명시됨
+- [ ] 예제 코드 실행 가능
+- [ ] 폴더만 복사해도 작동 (self-contained)
+
+---
+
+## 🔄 실제 예시: PPTX 스킬
+
+```
+.claude/skills/pptx/
+├── SKILL.md              ← 메인 스킬 파일 (886줄)
+├── package.json          ← Node.js 의존성
+├── lib/                  ← 빌더 API 라이브러리
+│   ├── index.js
+│   ├── builder.js
+│   └── themes/           ← 테마 시스템
+│       ├── index.js
+│       ├── nxtcloud-v1/
+│       └── nxtcloud-v2/
+└── tools/                ← Python 편집 도구
+    ├── ooxml.md
+    ├── requirements.txt
+    ├── inventory.py
+    ├── replace.py
+    ├── rearrange.py
+    └── thumbnail.py
+```
+
+**사용법:**
+```javascript
+const { PresentationBuilder } = require('./.claude/skills/pptx/lib');
+
+const builder = new PresentationBuilder('nxtcloud-v1');
+builder.addTitleSlide({ title: '제목', subtitle: '부제목' });
+await builder.save('output.pptx');
 ```
 
 ---
 
 ## 📝 작성 가이드
 
-### README.md 작성 팁
+### SKILL.md 작성 팁
 
-1. **제목**: 스킬의 이름과 주요 기능을 명확히
-2. **한 줄 설명**: "이것은 ___를 자동화합니다"
-3. **기능 목록**: 3-5개 핵심 기능
-4. **빠른 시작**: 3단계 이내로 시작 가능하게
-5. **코드 예제**: 모두 실행 가능해야 함
-6. **문제 해결**: 가장 흔한 3-5가지 문제
-7. **다음 단계**: 자세한 가이드로 링크
+1. **Front Matter**: 필수 메타데이터 포함
+2. **Quick Start**: 3단계 이내로 시작 가능하게
+3. **예제**: 모두 실행 가능해야 함
+4. **API Reference**: 복잡한 스킬은 상세 문서화
+5. **문제 해결**: 가장 흔한 3-5가지 문제
 
-### 설치 스크립트 작성 팁
+### 코드 작성 팁
 
-1. **진행 상황 표시**: 숫자 이모지 + 색상
-2. **단계별 설명**: 각 단계가 무엇인지 명확히
-3. **오류 처리**: 실패 시 중단
-4. **옵션 처리**: 선택사항은 사용자에게 묻기
-5. **최종 확인**: 설치 성공 여부 검증
-6. **도움말**: 마지막에 다음 단계 안내
+1. **모듈화**: 기능별로 파일 분리
+2. **오류 처리**: 명확한 에러 메시지
+3. **주석**: 복잡한 로직에만
+4. **테스트**: npm test로 검증 가능하게
 
 ---
 
-## ✅ 체크리스트
-
-새 스킬 추가 전 확인:
-
-- [ ] 폴더명 결정 (소문자, 하이픈)
-- [ ] README.md 작성
-- [ ] INSTALL.md 작성
-- [ ] install-mac.sh 작성 (chmod +x)
-- [ ] install-linux.sh 작성 (chmod +x)
-- [ ] requirements.txt 또는 package.json 작성
-- [ ] 도구/리소스 폴더 생성
-- [ ] macOS에서 설치 테스트
-- [ ] Linux에서 설치 테스트
-- [ ] README.md의 예제 테스트
-- [ ] 최상위 README.md 업데이트
-
----
-
-## 🔄 사용 예시
-
-### 예: PDF 스킬 추가
-
-```bash
-# 1. 폴더 생성
-mkdir -p .claude/skills/pdf
-
-# 2. 파일 생성
-cd .claude/skills/pdf
-touch README.md INSTALL.md install-mac.sh install-linux.sh requirements.txt
-
-# 3. 이 템플릿을 참고하여 파일 작성
-
-# 4. 권한 설정
-chmod +x install-*.sh
-
-# 5. 테스트
-bash install-mac.sh
-```
-
----
-
-**마지막 업데이트**: 2026-01-25
+**마지막 업데이트**: 2026-01-26

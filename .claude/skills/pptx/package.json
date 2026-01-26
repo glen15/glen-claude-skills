@@ -1,26 +1,20 @@
 {
-  "name": "cowork-pptx",
-  "version": "1.0.0",
-  "description": "PowerPoint 자동화 - HTML, CSS, JS로 프레젠테이션 생성",
+  "name": "pptx-skill",
+  "version": "2.0.0",
+  "description": "PowerPoint 프레젠테이션 생성 및 편집 라이브러리",
   "author": "Glen",
   "license": "Proprietary",
-  "globalDependencies": {
-    "pptxgenjs": "^3.0.0",
-    "playwright": "^1.40.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-icons": "^5.0.0"
-  },
+  "main": "lib/index.js",
   "scripts": {
-    "install-global": "npm install -g pptxgenjs playwright react react-dom react-icons",
-    "build": "NODE_PATH=\"$(npm root -g)\" node build.js"
+    "test": "node -e \"const {PresentationBuilder}=require('./lib'); console.log('OK');\""
   },
   "keywords": [
     "pptx",
     "powerpoint",
     "presentation",
-    "html2pptx",
-    "automation"
+    "pptxgenjs"
   ],
-  "devDependencies": {}
+  "dependencies": {
+    "pptxgenjs": "^4.0.1"
+  }
 }
