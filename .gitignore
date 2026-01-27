@@ -8,3 +8,6 @@ output.pptx
 # MCP 설정 (실제 키 포함)
 mcp-configs/mcp-servers.json
 .claude/settings.local.json
+
+# PPTX 스킬 출력물
+contents/
