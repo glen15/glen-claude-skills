@@ -8,7 +8,6 @@ Claude Code 개인 스킬 저장소
 glen-claude-skills/
 ├── CLAUDE.md                    # 프로젝트 규칙 (Immutability, 보안 등)
 ├── mcp-configs/                 # MCP 서버 설정 템플릿
-├── examples/                    # 설정 예시 (statusline 등)
 ├── plugins/                     # 플러그인 가이드
 └── .claude/
     ├── settings.json            # 설정 + hooks
