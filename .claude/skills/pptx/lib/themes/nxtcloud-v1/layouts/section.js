@@ -12,9 +12,13 @@ function createSectionSlide(pptx, themeModule, data = {}) {
   slide.background = { color: getColor(bgColor) };
 
   // 섹션 번호
+  // 어두운 배경에서는 밝은 색상 사용
+  const darkBgs = ['navy', 'navyLight', 'slate800', 'slate900', 'primary', 'primaryDark'];
+  const isDarkBg = darkBgs.includes(bgColor);
+
   if (data.number) {
     const numberColor = bgColor === 'primary' ? '93c5fd' :
-                        bgColor === 'navy' ? 'slate400' : 'white';
+                        isDarkBg ? getColor('slate300') : getColor('slate600');
 
     slide.addText(data.number, {
       x: layout.margin.x, y: section.numberY,
@@ -42,7 +46,7 @@ function createSectionSlide(pptx, themeModule, data = {}) {
   if (data.description || data.subtitle) {
     const desc = data.description || data.subtitle;
     const subtitleColor = bgColor === 'primary' ? '93c5fd' :
-                          bgColor === 'navy' ? 'slate400' : 'white';
+                          isDarkBg ? getColor('slate300') : getColor('slate500');
 
     slide.addText(desc, {
       x: layout.margin.x, y: section.descY,

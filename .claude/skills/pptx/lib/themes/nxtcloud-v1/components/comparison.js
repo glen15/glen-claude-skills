@@ -39,9 +39,15 @@ function addComparisonBox(slide, pptx, themeModule, options) {
     items, points,
     icon,
     bgColor = 'slate100',
-    titleColor = 'slate700',
-    textColor = 'slate500'
+    color // 헤더 바 색상 (v2 호환)
   } = options;
+
+  // 배경색에 따라 텍스트 색상 자동 결정
+  const darkBgs = ['navy', 'navyLight', 'primary', 'primaryDark', 'slate800', 'slate900', 'accent'];
+  const effectiveBgColor = color || bgColor;
+  const isDarkBg = darkBgs.includes(effectiveBgColor);
+  const titleColor = isDarkBg ? 'white' : 'slate700';
+  const textColor = isDarkBg ? 'slate200' : 'slate500';
 
   const listItems = items || points || [];
   const padding = 0.2;
@@ -49,7 +55,7 @@ function addComparisonBox(slide, pptx, themeModule, options) {
   // 배경
   slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
     x, y, w, h,
-    fill: { type: 'solid', color: getColor(bgColor) }
+    fill: { type: 'solid', color: getColor(effectiveBgColor) }
   });
 
   // 제목
