@@ -92,19 +92,19 @@ const theme = {
     // V2: 좌측 정렬 섹션
     section: {
       numberY: 1.8,
-      titleY: 2.3,
-      descY: 3.2,
+      titleY: 2.4,
+      descY: 3.5,
       accentBarX: 0.6,
       accentBarW: 0.15,
-      accentBarH: 1.5
+      accentBarH: 1.8
     },
 
     // V2: 헤더 (라벨 포함)
     header: {
       labelY: 0.35,
       titleY: 0.55,
-      subtitleY: 0.95,
-      lineY: 1.35
+      subtitleY: 1.15,
+      lineY: 1.45
     },
 
     content: {

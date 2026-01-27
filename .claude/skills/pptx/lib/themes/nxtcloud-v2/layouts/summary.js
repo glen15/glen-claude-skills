@@ -12,13 +12,20 @@ function createSummarySlide(pptx, themeModule, data = {}) {
   const slide = pptx.addSlide();
   slide.background = { color: getColor(bgColor) };
 
+  // 어두운 배경인지 확인 (navy, darkBg, primary 등)
+  const darkBgs = ['navy', 'darkBg', 'slate800', 'slate900', 'black', 'primary', 'primaryDark'];
+  const isDarkBg = darkBgs.includes(bgColor);
+  const textColor = isDarkBg ? 'white' : 'slate800';
+  const labelColor = isDarkBg ? 'accent' : 'primary';
+  const lineColor = isDarkBg ? 'white' : 'primary';
+
   // 상단 라벨
   if (data.label) {
     slide.addText(data.label, {
-      x: layout.margin.x, y: 0.6,
+      x: layout.margin.x, y: 0.5,
       w: layout.width - layout.margin.x * 2, h: 0.3,
       fontSize: 12,
-      color: getColor('primary'),
+      color: getColor(labelColor),
       bold: true
     });
   }
@@ -26,26 +33,32 @@ function createSummarySlide(pptx, themeModule, data = {}) {
   // 핵심 메시지
   if (data.title) {
     slide.addText(data.title, {
-      x: layout.margin.x, y: data.label ? 0.95 : 0.7,
-      w: layout.width - layout.margin.x * 2, h: 0.7,
+      x: layout.margin.x, y: data.label ? 1.0 : 0.7,
+      w: layout.width - layout.margin.x * 2, h: 1.2,
       fontSize: 28,
-      color: getColor('slate800'),
+      color: getColor(textColor),
       bold: true
     });
   }
 
   // 구분선
   slide.addShape(pptx.shapes.RECTANGLE, {
-    x: layout.margin.x, y: data.label ? 1.7 : 1.45,
+    x: layout.margin.x, y: data.label ? 2.3 : 1.95,
     w: 2.5, h: 0.04,
-    fill: { type: 'solid', color: getColor('primary') }
+    fill: { type: 'solid', color: getColor(lineColor) }
   });
 
   // 요점 목록 (카드 스타일)
   if (data.points && data.points.length > 0) {
-    const pointsY = data.label ? 2.0 : 1.75;
-    const cardHeight = 0.7;
-    const gap = 0.15;
+    const pointsY = data.label ? 2.6 : 2.25;
+    const maxY = layout.footer.y - 0.1;
+    const availableHeight = maxY - pointsY;
+    const pointCount = data.points.length;
+
+    // 포인트 개수에 따라 카드 높이와 gap 자동 계산
+    const totalGap = (pointCount - 1) * 0.1;
+    const cardHeight = Math.min(0.7, (availableHeight - totalGap) / pointCount);
+    const gap = pointCount > 1 ? (availableHeight - cardHeight * pointCount) / (pointCount - 1) : 0;
     const cardWidth = layout.width - layout.margin.x * 2;
 
     data.points.forEach((point, idx) => {
@@ -97,7 +110,7 @@ function createSummarySlide(pptx, themeModule, data = {}) {
   }
 
   if (data.footer) {
-    addFooter(slide, themeModule, { text: data.footer, color: 'slate400' });
+    addFooter(slide, themeModule, { text: data.footer, color: isDarkBg ? 'white' : 'slate400' });
   }
 
   return slide;

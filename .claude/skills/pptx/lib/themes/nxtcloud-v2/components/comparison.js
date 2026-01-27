@@ -78,15 +78,18 @@ function addComparisonBox(slide, pptx, themeModule, options = {}) {
     fill: { type: 'solid', color: getColor(color) }
   });
 
-  // 제목
+  // 제목 - 헤더 바 색상에 따라 텍스트 색상 결정
   if (title) {
+    const lightColors = ['white', 'slate50', 'slate100', 'slate200', 'gray50', 'gray100', 'gray200', 'lightBg'];
+    const titleTextColor = lightColors.includes(color) ? 'slate800' : 'white';
+
     slide.addText(title, {
       x: x + padding,
       y: y + 0.05,
       w: w - padding * 2,
       h: 0.4,
       fontSize: 16,
-      color: getColor('white'),
+      color: getColor(titleTextColor),
       bold: true,
       valign: 'middle'
     });

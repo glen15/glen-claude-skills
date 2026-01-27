@@ -46,16 +46,37 @@ function renderComponents(slide, pptx, themeModule, components) {
   const { theme, getColor } = themeModule;
   let currentY = theme.layout.content.startY;
 
+  // 사용 가능한 콘텐츠 영역 계산 (footer 영역 제외)
+  const maxY = theme.layout.footer.y - 0.15;
+  const availableHeight = maxY - currentY;
+
+  // cards 컴포넌트 개수와 기타 컴포넌트 높이 추정
+  const cardsCount = components.filter(c => c.type === 'cards').length;
+  const otherComponentsHeight = components.reduce((sum, c) => {
+    if (c.type === 'cards') return sum;
+    if (c.type === 'box') return sum + (c.h || 1.0) + 0.2;
+    if (c.type === 'text') return sum + 0.6;
+    if (c.type === 'bullets') return sum + 1.2;
+    if (c.type === 'comparison') return sum + (c.height || 2.8) + 0.3;
+    if (c.type === 'timeline') return sum + 2.5;
+    return sum + 0.5;
+  }, 0);
+
+  // cards에 할당 가능한 높이 계산
+  const heightForCards = availableHeight - otherComponentsHeight;
+  const autoCardHeight = cardsCount > 0 ? Math.max(1.2, (heightForCards - (cardsCount - 1) * 0.3) / cardsCount) : 2.2;
+
   components.forEach(comp => {
     switch (comp.type) {
       case 'cards':
+        const cardH = comp.cardHeight || autoCardHeight;
         addCards(slide, pptx, themeModule, {
           items: comp.items,
           columns: comp.columns,
           startY: comp.y || currentY,
-          cardHeight: comp.cardHeight
+          cardHeight: cardH
         });
-        currentY += (comp.cardHeight || 2.2) + 0.3;
+        currentY += cardH + 0.3;
         break;
 
       case 'bullets':
@@ -88,15 +109,54 @@ function renderComponents(slide, pptx, themeModule, components) {
         break;
 
       case 'text':
+        const textX = comp.x || theme.layout.margin.x;
+        const textW = comp.w || theme.layout.width - theme.layout.margin.x * 2;
+        const textFontSize = comp.fontSize || theme.typography.body.size;
+
+        // 텍스트 길이에 따라 높이 자동 계산 (한글 기준 1인치당 약 5글자, 줄 높이 0.3인치)
+        const charsPerLine = Math.floor(textW * 5);
+        const estimatedLines = Math.ceil(comp.text.length / charsPerLine);
+        const lineHeight = textFontSize / 72 * 1.5; // pt to inch, 1.5 line spacing
+        const autoHeight = Math.max(0.4, estimatedLines * lineHeight);
+        const textH = comp.h || autoHeight;
+
         slide.addText(comp.text, {
-          x: comp.x || theme.layout.margin.x,
+          x: textX,
           y: comp.y || currentY,
-          w: comp.w || theme.layout.width - theme.layout.margin.x * 2,
-          h: comp.h || 0.5,
-          fontSize: comp.fontSize || theme.typography.body.size,
-          color: getColor(comp.color || 'slate700')
+          w: textW,
+          h: textH,
+          fontSize: textFontSize,
+          color: getColor(comp.color || 'slate700'),
+          valign: 'top'
         });
-        currentY += (comp.h || 0.5) + 0.2;
+        currentY += textH + 0.2;
+        break;
+
+      case 'box':
+        const boxX = comp.x || theme.layout.margin.x;
+        const boxW = comp.w || theme.layout.width - theme.layout.margin.x * 2;
+        const boxH = comp.h || 1.0;
+        const boxBgColor = comp.bgColor || 'slate100';
+        const boxTextColor = comp.color || (['accent', 'primary', 'navy', 'slate800', 'slate900'].includes(boxBgColor) ? 'white' : 'slate800');
+
+        // 박스 배경
+        slide.addShape(pptx.shapes.ROUNDED_RECTANGLE, {
+          x: boxX, y: currentY,
+          w: boxW, h: boxH,
+          fill: { type: 'solid', color: getColor(boxBgColor) },
+          line: { color: getColor(boxBgColor), width: 0 }
+        });
+
+        // 박스 텍스트
+        slide.addText(comp.text, {
+          x: boxX + 0.2, y: currentY,
+          w: boxW - 0.4, h: boxH,
+          fontSize: comp.fontSize || 14,
+          color: getColor(boxTextColor),
+          valign: 'middle',
+          align: comp.align || 'left'
+        });
+        currentY += boxH + 0.2;
         break;
     }
   });
