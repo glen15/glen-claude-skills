@@ -24,20 +24,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "#!/bin/bash\ninput=$(cat)\ncmd=$(printf '%s' \"$input\" | jq -r '.tool_input.command // \"\"')\n\n# Block dev servers that aren't run in tmux\nif printf '%s' \"$cmd\" | grep -qE '(npm run dev|pnpm( run)? dev|yarn dev|bun run dev)'; then\n  echo '[Hook] BLOCKED: Dev server must run in tmux for log access' >&2\n  echo '[Hook] Use this command instead:' >&2\n  printf '[Hook] tmux new-session -d -s dev '\\''npm run dev'\\''\\n' >&2\n  echo '[Hook] Then: tmux attach -t dev' >&2\n  exit 2\nfi\n\n# Reminder for long-running commands\nif printf '%s' \"$cmd\" | grep -qE '(npm (install|test)|pnpm (install|test)|yarn (install|test)|bun (install|test)|cargo build|make|docker|pytest|vitest|playwright)'; then\n  if [ -z \"$TMUX\" ]; then\n    echo '[Hook] Consider running in tmux for session persistence' >&2\n    echo '[Hook] tmux new -s dev  |  tmux attach -t dev' >&2\n  fi\nfi\n\n# Pause before git push\nif printf '%s' \"$cmd\" | grep -qE 'git push'; then\n  echo '[Hook] Review changes before push...' >&2\n  echo '[Hook] Press Enter to continue with push or Ctrl+C to abort...' >&2\n  read -r\nfi\n\nprintf '%s' \"$input\""
+            "command": "#!/bin/bash\ninput=$(cat)\ncmd=$(printf '%s' \"$input\" | jq -r '.tool_input.command // \"\"')\n\n# dev 서버는 tmux에서만 실행\nif printf '%s' \"$cmd\" | grep -qE '(npm run dev|pnpm( run)? dev|yarn dev|bun run dev)'; then\n  echo '[훅] 차단: dev 서버는 로그 접근을 위해 tmux에서 실행해야 합니다' >&2\n  echo '[훅] 다음 명령어를 사용하세요:' >&2\n  printf '[훅] tmux new-session -d -s dev '\\''npm run dev'\\''\\n' >&2\n  echo '[훅] 그 후: tmux attach -t dev' >&2\n  exit 2\nfi\n\n# 장시간 명령어 tmux 알림\nif printf '%s' \"$cmd\" | grep -qE '(npm (install|test)|pnpm (install|test)|yarn (install|test)|bun (install|test)|cargo build|make|docker|pytest|vitest|playwright)'; then\n  if [ -z \"$TMUX\" ]; then\n    echo '[훅] 세션 유지를 위해 tmux 사용을 권장합니다' >&2\n    echo '[훅] tmux new -s dev  |  tmux attach -t dev' >&2\n  fi\nfi\n\n# git push 전 확인\nif printf '%s' \"$cmd\" | grep -qE 'git push'; then\n  echo '[훅] push 전 변경사항을 확인하세요...' >&2\n  echo '[훅] 계속하려면 Enter, 취소하려면 Ctrl+C...' >&2\n  read -r\nfi\n\nprintf '%s' \"$input\""
           }
         ],
-        "description": "Bash command guards: block dev servers outside tmux, remind about tmux, pause before git push"
+        "description": "Bash 명령어 가드: dev 서버 tmux 강제, 장시간 명령 알림, git push 확인"
       },
       {
         "matcher": "Write",
         "hooks": [
           {
             "type": "command",
-            "command": "#!/bin/bash\ninput=$(cat)\nfile_path=$(printf '%s' \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\n# Whitelist 패턴\nwhitelist='(README|CLAUDE|AGENTS|CONTRIBUTING)'\n\nif [[ \"$file_path\" =~ \\.(md|txt)$ ]] && [[ ! \"$file_path\" =~ $whitelist ]]; then\n  echo \"[Hook] BLOCKED: 불필요한 문서 파일 생성 차단\" >&2\n  echo \"[Hook] 파일: $file_path\" >&2\n  echo \"[Hook] README.md를 사용하세요\" >&2\n  exit 2\nfi\n\nprintf '%s' \"$input\""
+            "command": "#!/bin/bash\ninput=$(cat)\nfile_path=$(printf '%s' \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\n# 허용 목록\nwhitelist='(README|CLAUDE|AGENTS|CONTRIBUTING)'\n\nif [[ \"$file_path\" =~ \\.(md|txt)$ ]] && [[ ! \"$file_path\" =~ $whitelist ]]; then\n  echo '[훅] 차단: 불필요한 문서 파일 생성' >&2\n  echo \"[훅] 파일: $file_path\" >&2\n  echo '[훅] README.md를 사용하세요' >&2\n  exit 2\nfi\n\nprintf '%s' \"$input\""
           }
         ],
-        "description": "Block creation of random .md files - keeps docs consolidated"
+        "description": "불필요한 .md 파일 생성 차단 - 문서 통합 유지"
       }
     ],
     "PostToolUse": [
@@ -46,20 +46,20 @@
         "hooks": [
           {
             "type": "command",
-            "command": "#!/bin/bash\ninput=$(cat)\ncmd=$(printf '%s' \"$input\" | jq -r '.tool_input.command // \"\"')\n\n# Auto-detect PR creation and log useful info\nif printf '%s' \"$cmd\" | grep -qE 'gh pr create'; then\n  output=$(printf '%s' \"$input\" | jq -r '.tool_output.stdout // \"\"')\n  pr_url=$(printf '%s' \"$output\" | grep -oE 'https://github.com/[^/]+/[^/]+/pull/[0-9]+')\n  \n  if [ -n \"$pr_url\" ]; then\n    echo \"[Hook] PR created: $pr_url\" >&2\n    echo \"[Hook] Checking GitHub Actions status...\" >&2\n    repo=$(printf '%s' \"$pr_url\" | sed -E 's|https://github.com/([^/]+/[^/]+)/pull/[0-9]+|\\1|')\n    pr_num=$(printf '%s' \"$pr_url\" | sed -E 's|.*/pull/([0-9]+)|\\1|')\n    echo \"[Hook] To review PR: gh pr review $pr_num --repo $repo\" >&2\n  fi\nfi\n\nprintf '%s' \"$input\""
+            "command": "#!/bin/bash\ninput=$(cat)\ncmd=$(printf '%s' \"$input\" | jq -r '.tool_input.command // \"\"')\n\n# PR 생성 감지 및 정보 출력\nif printf '%s' \"$cmd\" | grep -qE 'gh pr create'; then\n  output=$(printf '%s' \"$input\" | jq -r '.tool_output.stdout // \"\"')\n  pr_url=$(printf '%s' \"$output\" | grep -oE 'https://github.com/[^/]+/[^/]+/pull/[0-9]+')\n  \n  if [ -n \"$pr_url\" ]; then\n    echo \"[훅] PR 생성됨: $pr_url\" >&2\n    echo '[훅] GitHub Actions 상태 확인 중...' >&2\n    repo=$(printf '%s' \"$pr_url\" | sed -E 's|https://github.com/([^/]+/[^/]+)/pull/[0-9]+|\\1|')\n    pr_num=$(printf '%s' \"$pr_url\" | sed -E 's|.*/pull/([0-9]+)|\\1|')\n    echo \"[훅] PR 리뷰: gh pr review $pr_num --repo $repo\" >&2\n  fi\nfi\n\nprintf '%s' \"$input\""
           }
         ],
-        "description": "Log PR URL and provide review command after PR creation"
+        "description": "PR 생성 후 URL 및 리뷰 명령어 출력"
       },
       {
         "matcher": "Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "#!/bin/bash\ninput=$(cat)\nfile_path=$(printf '%s' \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\n# Only process JS/TS files\nif [[ ! \"$file_path\" =~ \\.(ts|tsx|js|jsx)$ ]]; then\n  printf '%s' \"$input\"\n  exit 0\nfi\n\n# Auto-format with Prettier\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  if command -v prettier >/dev/null 2>&1; then\n    prettier --write \"$file_path\" 2>&1 | head -5 >&2\n  fi\nfi\n\n# TypeScript check for .ts/.tsx files\nif [[ \"$file_path\" =~ \\.(ts|tsx)$ ]] && [ -f \"$file_path\" ]; then\n  dir=$(dirname \"$file_path\")\n  project_root=\"$dir\"\n  while [ \"$project_root\" != \"/\" ] && [ ! -f \"$project_root/package.json\" ]; do\n    project_root=$(dirname \"$project_root\")\n  done\n  \n  if [ -f \"$project_root/tsconfig.json\" ]; then\n    cd \"$project_root\" && npx tsc --noEmit --pretty false 2>&1 | grep \"$file_path\" | head -10 >&2 || true\n  fi\nfi\n\n# Warn about console.log\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  console_logs=$(grep -n \"console\\.log\" \"$file_path\" 2>/dev/null || true)\n  \n  if [ -n \"$console_logs\" ]; then\n    echo \"[Hook] WARNING: console.log found in $file_path\" >&2\n    printf '%s\\n' \"$console_logs\" | head -5 >&2\n    echo \"[Hook] Remove console.log before committing\" >&2\n  fi\nfi\n\nprintf '%s' \"$input\""
+            "command": "#!/bin/bash\ninput=$(cat)\nfile_path=$(printf '%s' \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\n# JS/TS 파일만 처리\nif [[ ! \"$file_path\" =~ \\.(ts|tsx|js|jsx)$ ]]; then\n  printf '%s' \"$input\"\n  exit 0\nfi\n\n# Prettier 자동 포맷\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  if command -v prettier >/dev/null 2>&1; then\n    prettier --write \"$file_path\" 2>&1 | head -5 >&2\n  fi\nfi\n\n# TypeScript 타입 체크\nif [[ \"$file_path\" =~ \\.(ts|tsx)$ ]] && [ -f \"$file_path\" ]; then\n  dir=$(dirname \"$file_path\")\n  project_root=\"$dir\"\n  while [ \"$project_root\" != \"/\" ] && [ ! -f \"$project_root/package.json\" ]; do\n    project_root=$(dirname \"$project_root\")\n  done\n  \n  if [ -f \"$project_root/tsconfig.json\" ]; then\n    cd \"$project_root\" && npx tsc --noEmit --pretty false 2>&1 | grep \"$file_path\" | head -10 >&2 || true\n  fi\nfi\n\n# console.log 경고\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  console_logs=$(grep -n \"console\\.log\" \"$file_path\" 2>/dev/null || true)\n  \n  if [ -n \"$console_logs\" ]; then\n    echo \"[훅] 경고: console.log 발견 - $file_path\" >&2\n    printf '%s\\n' \"$console_logs\" | head -5 >&2\n    echo '[훅] 커밋 전 console.log를 제거하세요' >&2\n  fi\nfi\n\nprintf '%s' \"$input\""
           }
         ],
-        "description": "Auto-format, TypeScript check, and console.log warning for JS/TS file edits"
+        "description": "JS/TS 파일 수정 후 자동 포맷, 타입 체크, console.log 경고"
       }
     ],
     "Stop": [
@@ -68,10 +68,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "#!/bin/bash\ninput=$(cat)\n\nif git rev-parse --git-dir > /dev/null 2>&1; then\n  modified_files=$(git diff --name-only HEAD 2>/dev/null | grep -E '\\.(ts|tsx|js|jsx)$' || true)\n  \n  if [ -n \"$modified_files\" ]; then\n    has_console=false\n    while IFS= read -r file; do\n      if [ -f \"$file\" ]; then\n        if grep -q \"console\\.log\" \"$file\" 2>/dev/null; then\n          echo \"[Hook] WARNING: console.log found in $file\" >&2\n          has_console=true\n        fi\n      fi\n    done <<< \"$modified_files\"\n    \n    if [ \"$has_console\" = true ]; then\n      echo \"[Hook] Remove console.log statements before committing\" >&2\n    fi\n  fi\nfi\n\nprintf '%s' \"$input\""
+            "command": "#!/bin/bash\ninput=$(cat)\n\nif git rev-parse --git-dir > /dev/null 2>&1; then\n  modified_files=$(git diff --name-only HEAD 2>/dev/null | grep -E '\\.(ts|tsx|js|jsx)$' || true)\n  \n  if [ -n \"$modified_files\" ]; then\n    has_console=false\n    while IFS= read -r file; do\n      if [ -f \"$file\" ]; then\n        if grep -q \"console\\.log\" \"$file\" 2>/dev/null; then\n          echo \"[훅] 경고: console.log 발견 - $file\" >&2\n          has_console=true\n        fi\n      fi\n    done <<< \"$modified_files\"\n    \n    if [ \"$has_console\" = true ]; then\n      echo '[훅] 커밋 전 console.log를 제거하세요' >&2\n    fi\n  fi\nfi\n\nprintf '%s' \"$input\""
           }
         ],
-        "description": "Final audit for console.log in modified files before session ends"
+        "description": "세션 종료 전 변경 파일의 console.log 최종 감사"
       }
     ]
   }
