@@ -221,7 +221,7 @@ OWASP Top 10 기반 보안 검토를 수행합니다.
 
 ---
 
-## 스킬 (8개)
+## 스킬 (7개)
 
 스킬은 특정 도메인의 지식과 패턴을 제공합니다.
 
@@ -289,14 +289,6 @@ function useAsync<T>(asyncFn: () => Promise<T>) {
   // ...
 }
 ```
-
-### clickhouse-io
-**ClickHouse 데이터베이스**
-
-ClickHouse 쿼리 및 스키마 설계 가이드입니다.
-- 컬럼 기반 최적화
-- 집계 쿼리 패턴
-- 파티셔닝 전략
 
 ### security-review/
 **보안 리뷰 워크플로우**
