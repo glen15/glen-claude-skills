@@ -19,6 +19,49 @@ glen-claude-skills/
 
 ---
 
+## 사전 요구사항
+
+이 스킬셋을 사용하기 위해 필요한 도구들입니다.
+
+### 필수
+
+| 도구 | 용도 | 설치 (macOS) |
+|------|------|--------------|
+| **jq** | 훅에서 JSON 파싱 | `brew install jq` |
+| **tmux** | dev 서버 백그라운드 실행 | `brew install tmux` |
+| **git** | 버전 관리, 훅 | 기본 설치됨 |
+| **Node.js** | JS 스킬 실행 | `brew install node` |
+
+### 권장
+
+| 도구 | 용도 | 설치 (macOS) |
+|------|------|--------------|
+| **prettier** | JS/TS 자동 포맷 (훅) | `npm install -g prettier` |
+| **Python 3** | pptx tools | `brew install python` |
+
+### 설치 확인
+
+```bash
+# 필수 도구 확인
+jq --version
+tmux -V
+git --version
+node --version
+
+# 권장 도구 확인
+prettier --version
+python3 --version
+```
+
+### 한 번에 설치 (macOS)
+
+```bash
+brew install jq tmux node python
+npm install -g prettier
+```
+
+---
+
 ## 에이전트 (9개)
 
 에이전트는 특정 작업에 특화된 전문가 역할을 수행합니다.
