@@ -1,5 +1,7 @@
 # 플러그인과 마켓플레이스
 
+> **참고**: 이 저장소의 에이전트들(code-reviewer, security-reviewer 등)은 플러그인 없이도 작동합니다. Claude Code 내장 도구(Read, Write, Edit, Bash, Grep, Glob)만 사용합니다. 아래 플러그인들은 선택적 확장 기능입니다.
+
 플러그인은 Claude Code에 새로운 도구와 기능을 추가합니다.
 
 ---
