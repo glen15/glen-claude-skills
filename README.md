@@ -7,6 +7,12 @@ Claude Code 개인 스킬 저장소
 ```
 glen-claude-skills/
 ├── CLAUDE.md                    # 프로젝트 규칙 (Immutability, 보안 등)
+├── package.json                 # 의존성 + npm 스크립트
+├── tsconfig.json                # TypeScript 설정
+├── vitest.config.ts             # Vitest 테스트 설정
+├── playwright.config.ts         # Playwright E2E 설정
+├── tests/                       # 단위 테스트
+├── e2e/                         # E2E 테스트
 ├── mcp-configs/                 # MCP 서버 설정 템플릿
 ├── plugins/                     # 플러그인 가이드
 └── .claude/
@@ -59,6 +65,29 @@ python3 --version
 brew install jq tmux node python
 npm install -g prettier
 ```
+
+---
+
+## 개발 환경
+
+### 설치
+
+```bash
+npm install
+npx playwright install  # E2E 브라우저 설치
+```
+
+### npm 스크립트
+
+| 스크립트 | 설명 |
+|---------|------|
+| `npm run test` | Vitest 테스트 실행 |
+| `npm run test:coverage` | 커버리지 포함 테스트 |
+| `npm run e2e` | Playwright E2E 테스트 |
+| `npm run e2e:ui` | Playwright UI 모드 |
+| `npm run typecheck` | TypeScript 타입 검사 |
+| `npm run lint:dead` | knip 죽은 코드 분석 |
+| `npm run lint:deps` | depcheck 의존성 분석 |
 
 ---
 
@@ -431,4 +460,4 @@ claude
 
 ---
 
-**마지막 업데이트**: 2026-01-27
+**마지막 업데이트**: 2026-01-28
