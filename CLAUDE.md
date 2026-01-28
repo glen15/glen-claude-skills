@@ -556,7 +556,7 @@ function useAsync<T>(asyncFn: () => Promise<T>, deps: unknown[]) {
 
 ---
 
-## 프로젝트 특화
+## 스킬 특화
 
 ### PPTX 스킬
 
