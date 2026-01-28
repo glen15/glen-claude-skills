@@ -392,7 +392,7 @@ Test-Driven Development 실천 가이드입니다.
 ### PreToolUse
 - dev 서버는 tmux에서만 실행
 - git push 전 확인 프롬프트
-- 불필요한 .md 파일 생성 차단
+- 불필요한 .md 파일 생성 차단 (`.skip-md-hook` 파일로 해제 가능)
 
 ### PostToolUse
 - JS/TS 파일 자동 Prettier 포맷
