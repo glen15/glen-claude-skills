@@ -17,3 +17,9 @@ mcp-configs/mcp-servers.json
 
 # PPTX 스킬 출력물
 contents/
+
+# 테스트 출력물
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
