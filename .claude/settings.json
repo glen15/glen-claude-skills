@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "#!/bin/bash\ninput=$(cat)\nfile_path=$(printf '%s' \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\n# 허용 목록\nwhitelist='(README|CLAUDE|AGENTS|CONTRIBUTING|CHANGELOG|LICENSE|docs/)'\n\nif [[ \"$file_path\" =~ \\.(md|txt)$ ]] && [[ ! \"$file_path\" =~ $whitelist ]]; then\n  echo '[훅] 차단: 불필요한 문서 파일 생성' >&2\n  echo \"[훅] 파일: $file_path\" >&2\n  echo '[훅] README.md를 사용하세요' >&2\n  exit 2\nfi\n\nprintf '%s' \"$input\""
+            "command": "#!/bin/bash\ninput=$(cat)\nfile_path=$(printf '%s' \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\n# .skip-md-hook 파일이 있으면 스킵\nif [ -f \".skip-md-hook\" ]; then\n  printf '%s' \"$input\"\n  exit 0\nfi\n\n# 허용 목록\nwhitelist='(README|CLAUDE|AGENTS|CONTRIBUTING|CHANGELOG|LICENSE|docs/)'\n\nif [[ \"$file_path\" =~ \\.(md|txt)$ ]] && [[ ! \"$file_path\" =~ $whitelist ]]; then\n  echo '[훅] 차단: 불필요한 문서 파일 생성' >&2\n  echo \"[훅] 파일: $file_path\" >&2\n  echo '[훅] README.md를 사용하세요' >&2\n  exit 2\nfi\n\nprintf '%s' \"$input\""
           }
         ],
         "description": "불필요한 .md 파일 생성 차단 - 문서 통합 유지"
