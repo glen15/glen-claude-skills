@@ -4,21 +4,14 @@
   "description": "Glen's Claude Code Skills - 로컬 스킬 저장소",
   "type": "module",
   "scripts": {
-    "test": "vitest",
-    "test:coverage": "vitest --coverage",
-    "e2e": "playwright test",
-    "e2e:ui": "playwright test --ui",
     "typecheck": "tsc --noEmit",
     "lint:dead": "knip",
     "lint:deps": "depcheck"
   },
   "devDependencies": {
-    "@playwright/test": "^1.50.0",
-    "@vitest/coverage-v8": "^2.1.0",
     "depcheck": "^1.4.7",
     "knip": "^5.43.0",
-    "typescript": "^5.7.0",
-    "vitest": "^2.1.0"
+    "typescript": "^5.7.0"
   },
   "engines": {
     "node": ">=18"

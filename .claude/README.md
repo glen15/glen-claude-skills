@@ -4,7 +4,7 @@
 
 ---
 
-## 🎯 스킬 시스템 (Claude Code 표준)
+## 스킬 시스템 (Claude Code 표준)
 
 이 프로젝트는 **Claude Code 표준 로컬 스킬 시스템**을 사용합니다.
 
@@ -15,7 +15,7 @@
 └── pptx/                    ← 스킬 디렉토리 (self-contained)
     ├── SKILL.md             ← 메인 파일 (필수)
     ├── package.json         ← Node.js 의존성
-    ├── lib/                 ← 빌더 API 라이브러리
+    ├── lib/                 ← html2pptx 라이브러리
     └── tools/               ← Python 편집 도구
 ```
 
@@ -33,18 +33,19 @@
 ✅ pptx/
    ├── SKILL.md             (메인 스킬 파일)
    ├── package.json
-   ├── lib/                 (빌더 API)
-   │   ├── index.js
-   │   ├── builder.js
-   │   └── themes/          (nxtcloud-v1, nxtcloud-v2)
-   └── tools/               (Python 편집 도구)
-       ├── ooxml.md
-       └── *.py
+   ├── lib/                 (html2pptx - 메인 라이브러리)
+   │   ├── html2pptx.js     (HTML → PPTX 변환)
+   │   ├── themes/          (nxtcloud-v1, nxtcloud-v2)
+   │   └── assets/          (로고 이미지)
+   ├── tools/               (Python 편집 도구)
+   │   ├── ooxml.md
+   │   └── *.py
+   └── archive/             (레거시 빌더 API)
 ```
 
 ---
 
-## 📖 스킬 사용
+## 스킬 사용
 
 ### PPTX 스킬 사용
 
@@ -54,19 +55,24 @@ Claude Code에서:
 /pptx
 ```
 
-### 프로그래밍 방식
+### 프로그래밍 방식 (html2pptx)
 
 ```javascript
-const { PresentationBuilder } = require('./.claude/skills/pptx/lib');
+const { html2pptx } = require('./.claude/skills/pptx/lib/html2pptx');
 
-const builder = new PresentationBuilder('nxtcloud-v1');
-builder.addTitleSlide({ title: '제목', subtitle: '부제목' });
-await builder.save('output.pptx');
+const html = `
+<section class="slide title-slide">
+  <h1>제목</h1>
+  <p class="subtitle">부제목</p>
+</section>
+`;
+
+await html2pptx(html, 'output.pptx', { theme: 'nxtcloud-v1' });
 ```
 
 ---
 
-## ➕ 스킬 추가
+## 스킬 추가
 
 새로운 스킬 `[skill-name]`을 추가하려면:
 
@@ -99,31 +105,33 @@ touch requirements.txt  # Python
 
 ---
 
-## 📁 폴더 구조
+## 폴더 구조
 
 ```
 glen-claude-skills/
 │
 ├── .claude/                    ← Claude Code 설정 (이 폴더)
 │   ├── README.md               ← 이 파일
-│   └── skills/                 ← Claude Code가 인식하는 스킬
-│       └── pptx/               ← PPTX 스킬 (self-contained)
-│           ├── SKILL.md
-│           ├── package.json
-│           ├── lib/
-│           └── tools/
+│   ├── agents/                 ← 에이전트 정의
+│   ├── commands/               ← 슬래시 명령어
+│   ├── docs/                   ← 가이드 문서
+│   │   └── plugins.md
+│   ├── skills/                 ← Claude Code가 인식하는 스킬
+│   │   └── pptx/               ← PPTX 스킬 (self-contained)
+│   │       ├── SKILL.md
+│   │       ├── package.json
+│   │       ├── lib/
+│   │       └── tools/
+│   └── settings.json
 │
 ├── contents/                   ← PPT 소스 콘텐츠
 │
-└── docs/                       ← 공통 문서
-    ├── getting-started.md
-    ├── skill-template.md
-    └── best-practices.md
+└── .mcp.json.example           ← MCP 서버 설정 예시
 ```
 
 ---
 
-## 🔄 워크플로우
+## 워크플로우
 
 ### 기존 스킬 사용
 
@@ -153,7 +161,7 @@ glen-claude-skills/
 
 ---
 
-## 💡 핵심 원칙
+## 핵심 원칙
 
 ### Self-Contained (자체 포함)
 
@@ -177,16 +185,7 @@ skills/pdf/            (외부 폴더)
 
 ---
 
-## 🔗 관련 문서
-
-- **[전체 프로젝트 README](../README.md)** - 프로젝트 개요
-- **[새 스킬 추가 가이드](../CONTRIBUTING.md)** - 스킬 개발 방법
-- **[스킬 템플릿](../docs/skill-template.md)** - 새 스킬 템플릿
-- **[Best Practices](../docs/best-practices.md)** - 개발 가이드라인
-
----
-
-## 📞 도움말
+## 도움말
 
 ### Claude Code가 스킬을 인식하지 못함
 
@@ -209,4 +208,4 @@ pip install -r requirements.txt
 
 ---
 
-**마지막 업데이트**: 2026-01-26
+**마지막 업데이트**: 2026-01-29

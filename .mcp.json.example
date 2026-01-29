@@ -1,58 +1,92 @@
 {
   "mcpServers": {
     "github": {
-      "type": "stdio",
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_your_github_token_here"
-      }
-    },
-    "memory": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "env": {}
-    },
-    "filesystem": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/your/workspace/path"],
-      "env": {}
-    },
-    "sequential-thinking": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-      "env": {}
-    },
-    "magic": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@magicuidesign/mcp@latest"],
-      "env": {}
-    },
-    "context7": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"],
-      "env": {}
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT_HERE"
+      },
+      "description": "GitHub operations - PRs, issues, repos"
     },
     "firecrawl": {
-      "type": "stdio",
       "command": "npx",
       "args": ["-y", "firecrawl-mcp"],
       "env": {
-        "FIRECRAWL_API_KEY": "your_firecrawl_api_key_here"
-      }
+        "FIRECRAWL_API_KEY": "YOUR_FIRECRAWL_KEY_HERE"
+      },
+      "description": "Web scraping and crawling"
     },
     "supabase": {
-      "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--project-ref=your_project_ref"],
-      "env": {
-        "SUPABASE_ACCESS_TOKEN": "your_supabase_access_token_here"
-      }
+      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--project-ref=YOUR_PROJECT_REF"],
+      "description": "Supabase database operations"
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "description": "Persistent memory across sessions"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Chain-of-thought reasoning"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com",
+      "description": "Vercel deployments and projects"
+    },
+    "railway": {
+      "command": "npx",
+      "args": ["-y", "@railway/mcp-server"],
+      "description": "Railway deployments"
+    },
+    "cloudflare-docs": {
+      "type": "http",
+      "url": "https://docs.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare documentation search"
+    },
+    "cloudflare-workers-builds": {
+      "type": "http",
+      "url": "https://builds.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare Workers builds"
+    },
+    "cloudflare-workers-bindings": {
+      "type": "http",
+      "url": "https://bindings.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare Workers bindings"
+    },
+    "cloudflare-observability": {
+      "type": "http",
+      "url": "https://observability.mcp.cloudflare.com/mcp",
+      "description": "Cloudflare observability/logs"
+    },
+    "clickhouse": {
+      "type": "http",
+      "url": "https://mcp.clickhouse.cloud/mcp",
+      "description": "ClickHouse analytics queries"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "description": "Live documentation lookup"
+    },
+    "magic": {
+      "command": "npx",
+      "args": ["-y", "@magicuidesign/mcp@latest"],
+      "description": "Magic UI components"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/your/projects"],
+      "description": "Filesystem operations (set your path)"
     }
+  },
+  "_comments": {
+    "setup": "cp .mcp.json.example .mcp.json 후 실제 값 입력",
+    "usage": "필요한 서버를 ~/.claude.json의 mcpServers에 복사",
+    "env_vars": "YOUR_*_HERE 플레이스홀더를 실제 값으로 교체",
+    "gitignore": ".mcp.json은 .gitignore에 포함됨 (키 보호)",
+    "context_warning": "컨텍스트 보존을 위해 10개 이하로 유지 권장"
   }
 }

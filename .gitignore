@@ -12,17 +12,10 @@ output.pptx
 
 # MCP 설정 (로컬 설정)
 .mcp.json
-mcp-configs/mcp-servers.json
 .claude/settings.local.json
 
 # PPTX 스킬 출력물
 contents/
-
-# 테스트 출력물
-coverage/
-test-results/
-playwright-report/
-playwright/.cache/
 
 # 임시 폴더
 tmp/
