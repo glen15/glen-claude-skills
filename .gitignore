@@ -23,3 +23,6 @@ coverage/
 test-results/
 playwright-report/
 playwright/.cache/
+
+# 임시 폴더
+tmp/
