@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Archive (deprecated Builder API - use global ~/.claude/skills/pptx/archive/)
+archive/
+
 # Output files
 output/
 *.pptx

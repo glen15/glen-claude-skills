@@ -4,3 +4,4 @@
 python-pptx>=0.6.21
 Pillow>=9.0.0
 six>=1.16.0
+defusedxml>=0.7.0
