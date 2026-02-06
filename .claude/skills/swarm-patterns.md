@@ -27,33 +27,51 @@ Agent Teams를 효과적으로 활용하기 위한 가이드.
 
 ## 팀 구성 템플릿
 
-### 1. 코드 리뷰 팀 (3명)
+### 1. 코드 리뷰 팀 (`/swarm-review`, 3명)
 
-| 역할 | 담당 | 초점 |
-|------|------|------|
-| Security Reviewer | 보안 취약점 | OWASP Top 10, 인증/인가, 입력 검증 |
-| Performance Reviewer | 성능/알고리즘 | N+1 쿼리, 메모리 누수, 시간 복잡도 |
-| Quality Reviewer | 코드 품질 | 테스트 커버리지, 가독성, 유지보수성 |
+| 역할 | 에이전트 | 초점 |
+|------|----------|------|
+| Security Reviewer | `security-reviewer` | OWASP Top 10, 인증/인가, 입력 검증 |
+| Performance Reviewer | `code-reviewer` + 성능 역할 | N+1 쿼리, 메모리 누수, 시간 복잡도 |
+| Quality Reviewer | `code-reviewer` + 품질 역할 | 테스트 커버리지, 가독성, 유지보수성 |
 
-### 2. 기능 개발 팀 (3명)
+### 2. 기능 개발 팀 (`/swarm-feature`, 3-4명)
 
-| 역할 | 담당 | 초점 |
-|------|------|------|
-| Frontend Agent | UI 컴포넌트/UX | 컴포넌트 설계, 상태 관리, 접근성 |
-| Backend Agent | API/비즈니스 로직 | 엔드포인트, 데이터 모델, 비즈니스 규칙 |
-| Test Agent | 테스트 작성/검증 | 단위/통합/E2E 테스트, 엣지 케이스 |
+| 역할 | 에이전트 | 참조 스킬 |
+|------|----------|-----------|
+| Frontend 역할 | `code-reviewer` + 프론트엔드 지시 | `frontend-patterns.md` |
+| Backend 역할 | `code-reviewer` + 백엔드 지시 | `backend-patterns.md` |
+| Test 역할 | `tdd-guide` | `tdd-workflow/SKILL.md` |
+| (선택) 설계 역할 | `architect` | 복잡한 인터페이스 설계 시 |
 
-### 3. 디버깅 팀 (3-5명)
+### 3. 디버깅 팀 (`/swarm-debug`, 3-5명)
 
-| 역할 | 방식 |
-|------|------|
-| 가설 A 검증자 | 데이터 흐름 문제 추적 |
-| 가설 B 검증자 | 상태 관리 문제 추적 |
-| 가설 C 검증자 | 외부 의존성 문제 추적 |
-| (선택) 가설 D | 타이밍/동시성 문제 추적 |
-| (선택) 가설 E | 환경/설정 문제 추적 |
+| 에러 유형 | 에이전트 | 가설 초점 |
+|-----------|----------|-----------|
+| 빌드/타입 에러 | `build-error-resolver` | TypeScript, 번들러 문제 |
+| 로직/런타임 에러 | `code-reviewer` | 코드 흐름, 상태 관리 |
+| 아키텍처 문제 | `architect` | 구조적 원인, 의존성 |
+| 보안 취약점 | `security-reviewer` | 인증/인가, 입력 검증 |
+| (선택) 종합 조율 | `planner` | 가설 정리, 증거 종합 |
 
-과학적 토론 방식: 각 팀원이 증거 기반으로 자기 가설을 검증하고, 다른 팀원의 가설을 적극적으로 반박하여 합의 도출.
+버그 성격에 맞는 3-5명을 선택. 과학적 토론 방식으로 증거 기반 합의 도출.
+
+### 4. 리팩토링 팀 (`/swarm-refactor`)
+
+| 역할 | 에이전트 | 초점 |
+|------|----------|------|
+| 구조 분석 | `architect` | 범위 설계, 인터페이스 정의 |
+| 모듈 리팩토링 | `refactor-cleaner` | 독립 모듈별 정리 |
+| 검증 | `code-reviewer` | 결과 품질 검토 |
+
+### 5. 리서치 팀 (`/swarm-research`, 3-4명)
+
+| 역할 | 에이전트 | 초점 |
+|------|----------|------|
+| 공식 문서 조사 | `general-purpose` | 최신 문서, API 레퍼런스 |
+| 커뮤니티 사례 | `general-purpose` | 실제 사용 사례, 장단점 |
+| 대안 비교 | `general-purpose` | 경쟁 기술 비교 분석 |
+| (선택) 아키텍처 평가 | `architect` | 시스템 설계 영향 분석 |
 
 ---
 

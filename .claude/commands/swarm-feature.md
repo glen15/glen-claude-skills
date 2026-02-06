@@ -8,10 +8,11 @@
    - 기능을 레이어별 독립 태스크로 분리
    - 공유 인터페이스/타입을 먼저 정의
 
-2. **레이어별 팀 구성** (기존 스킬 참조):
-   - **Frontend Agent**: UI 컴포넌트, 상태 관리 → `frontend-patterns.md` 참고
-   - **Backend Agent**: API/비즈니스 로직 → `backend-patterns.md` 참고
-   - **Test Agent**: 단위/통합/E2E 테스트 → `tdd-workflow/SKILL.md` 참고
+2. **레이어별 팀 구성** (기존 에이전트 + 스킬 역할 부여):
+   - **Frontend 역할** (`subagent_type: code-reviewer`): UI 컴포넌트, 상태 관리. `frontend-patterns.md` 스킬을 참고하여 프론트엔드 관점으로 작업하도록 지시
+   - **Backend 역할** (`subagent_type: code-reviewer`): API/비즈니스 로직. `backend-patterns.md` 스킬을 참고하여 백엔드 관점으로 작업하도록 지시
+   - **Test 역할** (`subagent_type: tdd-guide`): 단위/통합/E2E 테스트. `tdd-workflow/SKILL.md` 참고
+   - **(선택) 설계 역할** (`subagent_type: architect`): 복잡한 인터페이스 설계가 필요할 때
 
 3. **Plan Approval 필수**:
    - 각 팀원이 구현 전 계획 제출
