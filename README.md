@@ -6,7 +6,7 @@ Claude Code 개인 스킬 저장소
 
 ```
 glen-claude-skills/
-├── CLAUDE.md                    # 프로젝트 규칙 (Immutability, 보안 등)
+├── CLAUDE.md                    # 프로젝트 가이드 (모델/Effort Tuning)
 ├── package.json                 # 의존성 + npm 스크립트
 ├── tsconfig.json                # TypeScript 설정
 ├── vitest.config.ts             # Vitest 테스트 설정
@@ -15,13 +15,34 @@ glen-claude-skills/
 ├── e2e/                         # E2E 테스트
 ├── mcp-configs/                 # MCP 서버 설정 템플릿
 ├── plugins/                     # 플러그인 가이드
-└── .claude/
-    ├── settings.json            # 설정 + hooks
-    ├── settings.local.json      # MCP 서버 (gitignore)
+│
+└── .claude/                     # ← 스킬셋 본체
+    ├── settings.example.json    # 설정 템플릿 (git 추적)
+    ├── settings.json            # 실제 설정 (gitignore)
+    ├── settings.local.json      # MCP + 권한 (gitignore)
     ├── agents/                  # 에이전트 프롬프트
     ├── commands/                # 슬래시 커맨드
     └── skills/                  # 스킬
 ```
+
+---
+
+## 초기 설정
+
+```bash
+# 1. 클론
+git clone <repo-url> && cd glen-claude-skills
+
+# 2. settings 복사 (hooks, Agent Teams 등 활성화)
+cp .claude/settings.example.json .claude/settings.json
+
+# 3. 의존성 설치
+npm install
+cd .claude/skills/pptx && npm install
+```
+
+> **settings.json**은 gitignore 대상입니다. 개인 설정(hooks, 권한)을 자유롭게 수정하세요.
+> 코딩 원칙은 `~/.claude/CLAUDE.md`(글로벌)에서 관리합니다.
 
 ---
 
@@ -461,7 +482,7 @@ Opus 4.6과 함께 도입된 멀티에이전트 협업 기능입니다.
 
 ## Hooks
 
-`settings.json`에 정의된 자동화 훅:
+`settings.json`에 정의된 자동화 훅 (`settings.example.json`에서 복사 후 활성화):
 
 ### PreToolUse
 - dev 서버는 tmux에서만 실행
