@@ -216,9 +216,19 @@ OWASP Top 10 기반 보안 검토를 수행합니다.
 
 ---
 
-## 커맨드 (9개)
+## 커맨드 (14개)
 
 슬래시 커맨드로 빠르게 특정 작업을 실행합니다.
+
+### 단일 세션 vs Swarm
+
+| 상황 | 단일 세션 | Swarm |
+|------|----------|-------|
+| 코드 리뷰 | `/code-review` (3개 미만 파일) | `/swarm-review` (3개 이상 파일) |
+| 기능 구현 | `/tdd` (단일 레이어) | `/swarm-feature` (크로스레이어) |
+| 리팩토링 | `/refactor-clean` (단일 모듈) | `/swarm-refactor` (다수 모듈) |
+| 버그 수정 | `/build-fix` (빌드 에러) | `/swarm-debug` (원인 불명 버그) |
+| 리서치 | 직접 질문 | `/swarm-research` (다관점 비교) |
 
 ### /plan
 **구현 계획 생성**
@@ -291,9 +301,56 @@ OWASP Top 10 기반 보안 검토를 수행합니다.
 /update-docs --api        # API 문서만
 ```
 
+### /swarm-review
+**병렬 멀티렌즈 코드 리뷰** (Agent Teams)
+
+3명의 리뷰어(보안/성능/품질)가 동시에 코드를 검토합니다.
+기존 `security-reviewer`, `code-reviewer` 에이전트를 활용합니다.
+
+```bash
+/swarm-review             # 변경사항 3렌즈 병렬 리뷰
+```
+
+### /swarm-debug
+**경쟁 가설 디버깅** (Agent Teams)
+
+3-5명이 서로 다른 가설을 검증하고 반박하여 근본 원인을 찾습니다.
+
+```bash
+/swarm-debug              # 원인 불명 버그 분석
+```
+
+### /swarm-feature
+**크로스레이어 기능 개발** (Agent Teams)
+
+Frontend/Backend/Test 에이전트가 병렬로 기능을 구현합니다.
+각 팀원이 `frontend-patterns`, `backend-patterns`, `tdd-workflow` 스킬을 참조합니다.
+
+```bash
+/swarm-feature            # 풀스택 기능 병렬 개발
+```
+
+### /swarm-research
+**병렬 기술 리서치** (Agent Teams)
+
+여러 에이전트가 서로 다른 소스/관점에서 동시에 조사합니다.
+
+```bash
+/swarm-research           # 기술 비교/의사결정 리서치
+```
+
+### /swarm-refactor
+**모듈별 병렬 리팩토링** (Agent Teams)
+
+각 팀원에게 독립 모듈을 할당하여 병렬로 리팩토링합니다.
+
+```bash
+/swarm-refactor           # 대규모 병렬 리팩토링
+```
+
 ---
 
-## 스킬 (7개)
+## 스킬 (5개)
 
 스킬은 특정 도메인의 지식과 패턴을 제공합니다.
 
@@ -315,13 +372,15 @@ const pres = createPresentation('nxtcloud-v2')
 - `themes/` - nxtcloud-v1, nxtcloud-v2 테마
 - `tools/` - Python 유틸리티 (슬라이드 조작)
 
-### coding-standards
-**TypeScript/React 코딩 표준**
+### swarm-patterns
+**Agent Teams 활용 가이드**
 
-프로젝트 전반의 코딩 컨벤션을 정의합니다.
-- 네이밍 규칙
-- 파일 구조
-- 타입 정의 패턴
+Swarm 모드 활용 패턴을 정의합니다.
+- Agent Teams vs Sub-Agents vs Single Session 판단 기준
+- 팀 구성 템플릿 (리뷰/개발/디버깅)
+- 태스크 분해/파일 소유권 가이드라인
+- 기존 커맨드와의 분기 기준
+- Hooks 자동 적용 안내
 
 ### backend-patterns
 **백엔드 아키텍처 패턴**
@@ -378,10 +437,25 @@ Test-Driven Development 실천 가이드입니다.
 - 테스트 작성 패턴
 - Mock/Stub 사용법
 
-### project-guidelines-example
-**프로젝트 가이드라인 예시**
+---
 
-새 프로젝트의 CLAUDE.md 작성 템플릿입니다.
+## Agent Teams (Swarm)
+
+Opus 4.6과 함께 도입된 멀티에이전트 협업 기능입니다.
+
+**활성화**: `settings.json`의 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+
+**키보드 단축키:**
+
+| 단축키 | 기능 |
+|--------|------|
+| `Shift+Up/Down` | 팀원 선택 |
+| `Shift+Tab` | Delegate 모드 토글 |
+| `Ctrl+T` | 태스크 리스트 토글 |
+| `Enter` | 팀원 세션 보기 |
+| `Escape` | 팀원 현재 턴 중단 |
+
+자세한 활용 패턴은 `swarm-patterns` 스킬 참고.
 
 ---
 
@@ -460,4 +534,4 @@ claude
 
 ---
 
-**마지막 업데이트**: 2026-01-28
+**마지막 업데이트**: 2026-02-06

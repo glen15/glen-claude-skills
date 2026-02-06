@@ -30,17 +30,21 @@
 ### 현재 등록된 스킬
 
 ```
-✅ pptx/
-   ├── SKILL.md             (메인 스킬 파일)
-   ├── package.json
-   ├── lib/                 (html2pptx - 메인 라이브러리)
-   │   ├── html2pptx.js     (HTML → PPTX 변환)
-   │   ├── themes/          (nxtcloud-v1, nxtcloud-v2)
-   │   └── assets/          (로고 이미지)
-   ├── tools/               (Python 편집 도구)
-   │   ├── ooxml.md
-   │   └── *.py
-   └── archive/             (레거시 빌더 API)
+✅ pptx/                       (PPTX 생성/편집)
+   ├── SKILL.md
+   ├── lib/html2pptx.js
+   ├── themes/
+   └── tools/
+
+✅ security-review/             (보안 리뷰 워크플로우)
+   └── SKILL.md
+
+✅ tdd-workflow/                (TDD 실천 가이드)
+   └── SKILL.md
+
+✅ swarm-patterns.md            (Agent Teams 활용 패턴)
+✅ backend-patterns.md          (백엔드 아키텍처 패턴)
+✅ frontend-patterns.md         (프론트엔드 개발 패턴)
 ```
 
 ---
@@ -112,16 +116,21 @@ glen-claude-skills/
 │
 ├── .claude/                    ← Claude Code 설정 (이 폴더)
 │   ├── README.md               ← 이 파일
-│   ├── agents/                 ← 에이전트 정의
-│   ├── commands/               ← 슬래시 명령어
+│   ├── agents/                 ← 에이전트 정의 (9개)
+│   ├── commands/               ← 슬래시 명령어 (14개)
 │   ├── docs/                   ← 가이드 문서
 │   │   └── plugins.md
 │   ├── skills/                 ← Claude Code가 인식하는 스킬
-│   │   └── pptx/               ← PPTX 스킬 (self-contained)
-│   │       ├── SKILL.md
-│   │       ├── package.json
-│   │       ├── lib/
-│   │       └── tools/
+│   │   ├── pptx/               ← PPTX 스킬 (self-contained)
+│   │   │   ├── SKILL.md
+│   │   │   ├── package.json
+│   │   │   ├── lib/
+│   │   │   └── tools/
+│   │   ├── security-review/    ← 보안 리뷰 워크플로우
+│   │   ├── tdd-workflow/       ← TDD 실천 가이드
+│   │   ├── swarm-patterns.md   ← Agent Teams 활용 패턴
+│   │   ├── backend-patterns.md ← 백엔드 아키텍처 패턴
+│   │   └── frontend-patterns.md← 프론트엔드 개발 패턴
 │   └── settings.json
 │
 ├── contents/                   ← PPT 소스 콘텐츠
@@ -208,4 +217,4 @@ pip install -r requirements.txt
 
 ---
 
-**마지막 업데이트**: 2026-01-29
+**마지막 업데이트**: 2026-02-06
