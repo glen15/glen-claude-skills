@@ -6,15 +6,16 @@ Agent Teams를 활용한 병렬 멀티렌즈 코드 리뷰를 수행합니다.
 
 1. **변경사항 확인**: `git diff --name-only HEAD`로 변경된 파일 목록 파악
 
-2. **3명의 리뷰어 팀 생성**:
-   - **Security Reviewer**: 보안 취약점 집중 (OWASP Top 10, 인증/인가, 입력 검증, 시크릿 노출)
-   - **Performance Reviewer**: 성능/알고리즘 분석 (N+1 쿼리, 메모리 누수, 시간 복잡도, 불필요한 연산)
-   - **Quality Reviewer**: 테스트 커버리지/코드 품질 (가독성, 유지보수성, 테스트 유무, 네이밍)
+2. **3명의 리뷰어 팀 생성** (기존 에이전트 활용):
+   - **Security Reviewer** (`subagent_type: security-reviewer`): 보안 취약점 집중 (OWASP Top 10, 인증/인가, 입력 검증, 시크릿 노출)
+   - **Performance Reviewer** (`subagent_type: code-reviewer`): 성능/알고리즘 분석 (N+1 쿼리, 메모리 누수, 시간 복잡도)
+   - **Quality Reviewer** (`subagent_type: code-reviewer`): 테스트 커버리지/코드 품질 (가독성, 유지보수성, 네이밍)
 
 3. **각 리뷰어의 spawn prompt에 포함**:
    - 변경된 파일 목록과 diff
    - 프로젝트 컨텍스트 (기술 스택, 아키텍처)
    - 해당 렌즈에 맞는 리뷰 기준
+   - 민감 정보(.env, 시크릿)는 컨텍스트에서 제외
 
 4. **Delegate 모드**로 리드가 조율만 담당
 
@@ -37,5 +38,6 @@ Agent Teams를 활용한 병렬 멀티렌즈 코드 리뷰를 수행합니다.
 ```
 
 ## 참고
-- 변경 파일이 3개 미만이면 단일 세션 리뷰가 더 효율적
+- 변경 파일이 3개 미만이면 `/code-review` (단일 세션)가 더 효율적
 - 파일 소유권을 명확히 분리하여 각 리뷰어가 독립적으로 작업
+- Hooks(Prettier, TypeScript 체크)가 각 팀원의 편집에 자동 적용됨

@@ -93,6 +93,28 @@ Agent Teams를 효과적으로 활용하기 위한 가이드.
 
 ---
 
+## Hooks 자동 적용
+
+기존 hooks 설정이 각 팀원의 작업에도 자동 적용됨:
+- **Edit hook**: Prettier 포맷팅 + TypeScript 타입 체크 + console.log 감지
+- **Bash hook**: git push 차단, dev 서버 tmux 강제
+- **Stop hook**: 세션 종료 전 console.log 최종 감사
+
+별도 품질 관리 설정 없이 팀원별 코드 품질이 자동 보장됨.
+
+---
+
+## 기존 커맨드와의 관계
+
+| 단일 세션 | Swarm | 분기 기준 |
+|----------|-------|----------|
+| `/code-review` | `/swarm-review` | 변경 파일 3개 이상 |
+| `/tdd` | `/swarm-feature` | 2개 이상 레이어 |
+| `/refactor-clean` | `/swarm-refactor` | 2개 이상 모듈 |
+| `/build-fix` | `/swarm-debug` | 원인 불명/복합 버그 |
+
+---
+
 ## 안티패턴
 
 - 단순 작업에 팀을 구성하지 말 것 (오버헤드 > 이득)

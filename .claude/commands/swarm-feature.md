@@ -8,10 +8,10 @@
    - 기능을 레이어별 독립 태스크로 분리
    - 공유 인터페이스/타입을 먼저 정의
 
-2. **레이어별 팀 구성**:
-   - **Frontend Agent**: UI 컴포넌트, 상태 관리, 사용자 인터랙션
-   - **Backend Agent**: API 엔드포인트, 비즈니스 로직, 데이터 모델
-   - **Test Agent**: 단위/통합/E2E 테스트 작성
+2. **레이어별 팀 구성** (기존 스킬 참조):
+   - **Frontend Agent**: UI 컴포넌트, 상태 관리 → `frontend-patterns.md` 참고
+   - **Backend Agent**: API/비즈니스 로직 → `backend-patterns.md` 참고
+   - **Test Agent**: 단위/통합/E2E 테스트 → `tdd-workflow/SKILL.md` 참고
 
 3. **Plan Approval 필수**:
    - 각 팀원이 구현 전 계획 제출
@@ -42,6 +42,7 @@
 ```
 
 ## 참고
-- 단일 레이어 변경은 단일 세션이 더 효율적
+- 단일 레이어 변경은 `/tdd` (단일 세션)가 더 효율적
 - Delegate 모드로 리드가 코드 작성하지 않도록 제한
 - Tidy First: 기존 코드 정리 후 기능 추가
+- Hooks(Prettier, TypeScript 체크)가 각 팀원의 편집에 자동 적용됨
