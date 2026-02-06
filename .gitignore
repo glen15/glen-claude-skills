@@ -10,8 +10,9 @@ output.pptx
 .env.local
 .env.*.local
 
-# MCP 설정 (로컬 설정)
+# Claude Code 로컬 설정
 .mcp.json
+.claude/settings.json
 .claude/settings.local.json
 
 # PPTX 스킬 출력물
