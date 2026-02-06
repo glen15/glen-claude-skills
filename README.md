@@ -1,48 +1,44 @@
 # Glen's Claude Skills
 
-Claude Code 개인 스킬 저장소
+Claude Code 전체 환경을 저장하는 마스터 저장소.
+새 머신에서 `./setup.sh` 한 줄로 글로벌 설정 + 스킬셋 전체를 복원합니다.
 
 ## 구조
 
 ```
 glen-claude-skills/
-├── CLAUDE.md                    # 프로젝트 가이드 (모델/Effort Tuning)
-├── package.json                 # 의존성 + npm 스크립트
-├── tsconfig.json                # TypeScript 설정
-├── vitest.config.ts             # Vitest 테스트 설정
-├── playwright.config.ts         # Playwright E2E 설정
-├── tests/                       # 단위 테스트
-├── e2e/                         # E2E 테스트
-├── mcp-configs/                 # MCP 서버 설정 템플릿
-├── plugins/                     # 플러그인 가이드
+├── setup.sh                     # 새 머신 셋업 스크립트
+├── CLAUDE.md                    # 프로젝트 전용 가이드
 │
-└── .claude/                     # ← 스킬셋 본체
-    ├── settings.example.json    # 설정 템플릿 (git 추적)
-    ├── settings.json            # 실제 설정 (gitignore)
-    ├── settings.local.json      # MCP + 권한 (gitignore)
-    ├── agents/                  # 에이전트 프롬프트
-    ├── commands/                # 슬래시 커맨드
-    └── skills/                  # 스킬
+├── global/                      # → ~/.claude/ 로 배포
+│   ├── CLAUDE.md                # 글로벌 코딩 원칙 (Tidy First, Immutability 등)
+│   ├── settings.example.json    # 글로벌 설정 템플릿 (hooks, plugins, language)
+│   └── mcp.example.json         # MCP 서버 템플릿 (github, firecrawl 등)
+│
+└── .claude/                     # 스킬셋 본체 (글로벌에도 배포)
+    ├── settings.example.json    # 프로젝트 설정 템플릿
+    ├── agents/                  # 에이전트 (9개)
+    ├── commands/                # 슬래시 커맨드 (14개)
+    └── skills/                  # 스킬 (6개)
 ```
 
 ---
 
-## 초기 설정
+## 새 머신 셋업
 
 ```bash
-# 1. 클론
 git clone <repo-url> && cd glen-claude-skills
-
-# 2. settings 복사 (hooks, Agent Teams 등 활성화)
-cp .claude/settings.example.json .claude/settings.json
-
-# 3. 의존성 설치
-npm install
-cd .claude/skills/pptx && npm install
+./setup.sh
 ```
 
-> **settings.json**은 gitignore 대상입니다. 개인 설정(hooks, 권한)을 자유롭게 수정하세요.
-> 코딩 원칙은 `~/.claude/CLAUDE.md`(글로벌)에서 관리합니다.
+`setup.sh`가 수행하는 작업:
+1. `global/CLAUDE.md` → `~/.claude/CLAUDE.md`
+2. `global/settings.example.json` → `~/.claude/settings.json` (없을 때만)
+3. `global/mcp.example.json` → `~/.claude/mcp.json` (없을 때만)
+4. `.claude/agents/`, `commands/`, `skills/` → `~/.claude/` 에 복사
+5. 프로젝트 `settings.json` 생성 + npm 의존성 설치
+
+> 설정 강제 덮어쓰기: `./setup.sh --force`
 
 ---
 

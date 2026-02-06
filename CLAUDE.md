@@ -2,7 +2,8 @@
 
 이 프로젝트는 Claude Code 스킬/에이전트/커맨드를 저장하는 개인 스킬 저장소입니다.
 
-> 코딩 원칙(Tidy First, Immutability, Guard Clauses 등)은 `~/.claude/CLAUDE.md`에 정의되어 있습니다.
+> 코딩 원칙(Tidy First, Immutability, Guard Clauses 등)은 `global/CLAUDE.md`에 정의되어 있으며,
+> `setup.sh` 실행 시 `~/.claude/CLAUDE.md`로 배포됩니다.
 > 이 파일은 **프로젝트 고유 설정**만 포함합니다.
 
 ---
@@ -10,23 +11,19 @@
 ## 프로젝트 구조
 
 ```
-외부 공개 (git 추적)           개인 설정 (gitignore)
-──────────────────           ──────────────────
-.claude/agents/               .claude/settings.json
-.claude/commands/             .claude/settings.local.json
-.claude/skills/               .mcp.json
-.claude/settings.example.json
-CLAUDE.md, README.md
+스킬셋 (git 추적)              글로벌 원천 (git 추적)        개인 설정 (gitignore)
+──────────────────           ──────────────────         ──────────────────
+.claude/agents/               global/CLAUDE.md           .claude/settings.json
+.claude/commands/             global/settings.example    .claude/settings.local.json
+.claude/skills/               global/mcp.example         .mcp.json
+.claude/settings.example.json setup.sh
 ```
 
-### 초기 설정
+### 새 머신 셋업
 
 ```bash
-# 클론 후 settings 복사
-cp .claude/settings.example.json .claude/settings.json
-
-# 의존성 설치
-cd .claude/skills/pptx && npm install
+git clone <repo-url> && cd glen-claude-skills
+./setup.sh          # 글로벌 + 프로젝트 전체 배포
 ```
 
 ---

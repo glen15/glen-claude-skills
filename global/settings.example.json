@@ -1,0 +1,77 @@
+{
+  "env": {
+    "CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(ln:*)",
+      "Bash(tree:*)",
+      "Bash(chmod:*)",
+      "Bash(ls:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\ninput=$(cat)\ncmd=$(printf '%s' \"$input\" | jq -r '.tool_input.command // \"\"')\n\n# git push 차단 - 사용자 허가 필요\nif printf '%s' \"$cmd\" | grep -qE 'git push'; then\n  echo '[훅] 차단: git push는 사용자 허가가 필요합니다' >&2\n  exit 2\nfi\n\nprintf '%s' \"$input\""
+          }
+        ],
+        "description": "git push 차단 - 사용자 허가 필요"
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\ninput=$(cat)\nfile_path=$(printf '%s' \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\n# .skip-md-hook 파일이 있으면 스킵\nif [ -f \".skip-md-hook\" ]; then\n  printf '%s' \"$input\"\n  exit 0\nfi\n\n# 허용 목록\nwhitelist='(README|CLAUDE|AGENTS|CONTRIBUTING|CHANGELOG|LICENSE|docs/|plan)'\n\nif [[ \"$file_path\" =~ \\.(md|txt)$ ]] && [[ ! \"$file_path\" =~ $whitelist ]]; then\n  echo '[훅] 차단: 불필요한 문서 파일 생성' >&2\n  echo \"[훅] 파일: $file_path\" >&2\n  echo '[훅] README.md를 사용하세요' >&2\n  exit 2\nfi\n\nprintf '%s' \"$input\""
+          }
+        ],
+        "description": "불필요한 .md 파일 생성 차단"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\ninput=$(cat)\ncmd=$(printf '%s' \"$input\" | jq -r '.tool_input.command // \"\"')\n\n# PR 생성 감지 및 정보 출력\nif printf '%s' \"$cmd\" | grep -qE 'gh pr create'; then\n  output=$(printf '%s' \"$input\" | jq -r '.tool_output.stdout // \"\"')\n  pr_url=$(printf '%s' \"$output\" | grep -oE 'https://github.com/[^/]+/[^/]+/pull/[0-9]+')\n  \n  if [ -n \"$pr_url\" ]; then\n    echo \"[훅] PR 생성됨: $pr_url\" >&2\n    echo '[훅] GitHub Actions 상태 확인 중...' >&2\n    repo=$(printf '%s' \"$pr_url\" | sed -E 's|https://github.com/([^/]+/[^/]+)/pull/[0-9]+|\\1|')\n    pr_num=$(printf '%s' \"$pr_url\" | sed -E 's|.*/pull/([0-9]+)|\\1|')\n    echo \"[훅] PR 리뷰: gh pr review $pr_num --repo $repo\" >&2\n  fi\nfi\n\nprintf '%s' \"$input\""
+          }
+        ],
+        "description": "PR 생성 후 URL 및 리뷰 명령어 출력"
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\ninput=$(cat)\nfile_path=$(printf '%s' \"$input\" | jq -r '.tool_input.file_path // \"\"')\n\n# JS/TS 파일만 처리\nif [[ ! \"$file_path\" =~ \\.(ts|tsx|js|jsx)$ ]]; then\n  printf '%s' \"$input\"\n  exit 0\nfi\n\n# Prettier 자동 포맷\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  if command -v prettier >/dev/null 2>&1; then\n    prettier --write \"$file_path\" 2>&1 | head -5 >&2\n  fi\nfi\n\n# TypeScript 타입 체크\nif [[ \"$file_path\" =~ \\.(ts|tsx)$ ]] && [ -f \"$file_path\" ]; then\n  dir=$(dirname \"$file_path\")\n  project_root=\"$dir\"\n  while [ \"$project_root\" != \"/\" ] && [ ! -f \"$project_root/package.json\" ]; do\n    project_root=$(dirname \"$project_root\")\n  done\n  \n  if [ -f \"$project_root/tsconfig.json\" ]; then\n    cd \"$project_root\" && npx tsc --noEmit --pretty false 2>&1 | grep \"$file_path\" | head -10 >&2 || true\n  fi\nfi\n\n# console.log 경고\nif [ -n \"$file_path\" ] && [ -f \"$file_path\" ]; then\n  console_logs=$(grep -n \"console\\.log\" \"$file_path\" 2>/dev/null || true)\n  \n  if [ -n \"$console_logs\" ]; then\n    echo \"[훅] 경고: console.log 발견 - $file_path\" >&2\n    printf '%s\\n' \"$console_logs\" | head -5 >&2\n    echo '[훅] 커밋 전 console.log를 제거하세요' >&2\n  fi\nfi\n\nprintf '%s' \"$input\""
+          }
+        ],
+        "description": "JS/TS 파일 수정 후 자동 포맷, 타입 체크, console.log 경고"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "#!/bin/bash\ninput=$(cat)\n\nif git rev-parse --git-dir > /dev/null 2>&1; then\n  modified_files=$(git diff --name-only HEAD 2>/dev/null | grep -E '\\.(ts|tsx|js|jsx)$' || true)\n  \n  if [ -n \"$modified_files\" ]; then\n    has_console=false\n    while IFS= read -r file; do\n      if [ -f \"$file\" ]; then\n        if grep -q \"console\\.log\" \"$file\" 2>/dev/null; then\n          echo \"[훅] 경고: console.log 발견 - $file\" >&2\n          has_console=true\n        fi\n      fi\n    done <<< \"$modified_files\"\n    \n    if [ \"$has_console\" = true ]; then\n      echo '[훅] 커밋 전 console.log를 제거하세요' >&2\n    fi\n  fi\nfi\n\nprintf '%s' \"$input\""
+          }
+        ],
+        "description": "세션 종료 전 변경 파일의 console.log 최종 감사"
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "claude-hud@claude-hud": true,
+    "notion-workspace-plugin@notion-plugin-marketplace": true
+  },
+  "language": "Korean"
+}
