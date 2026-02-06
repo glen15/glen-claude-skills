@@ -18,5 +18,11 @@ output.pptx
 # PPTX 스킬 출력물
 contents/
 
+# 훅 플래그 파일
+.skip-md-hook
+
+# Lock 파일 (devDependencies만 있는 루트)
+package-lock.json
+
 # 임시 폴더
 tmp/

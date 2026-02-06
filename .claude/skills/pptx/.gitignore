@@ -8,6 +8,10 @@ archive/
 output/
 *.pptx
 
+# 회사 로고 등 비공개 에셋
+assets/*.png
+assets/*.jpg
+
 # Python
 venv/
 __pycache__/
