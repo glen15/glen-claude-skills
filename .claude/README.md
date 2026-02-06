@@ -133,9 +133,12 @@ glen-claude-skills/
 │   │   └── frontend-patterns.md← 프론트엔드 개발 패턴
 │   └── settings.json
 │
-├── contents/                   ← PPT 소스 콘텐츠
+├── contents/                   ← PPT 소스 콘텐츠 (gitignore)
 │
-└── .mcp.json.example           ← MCP 서버 설정 예시
+├── CLAUDE.md                   ← 코딩 원칙 (→ ~/.claude/CLAUDE.md)
+├── settings.example.json       ← 글로벌 설정 템플릿 (→ ~/.claude/settings.json)
+├── mcp.example.json            ← MCP 서버 설정 (→ ~/.claude/mcp.json)
+└── setup.sh                    ← 새 머신 셋업 스크립트
 ```
 
 ---

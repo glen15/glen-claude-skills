@@ -39,6 +39,18 @@
       "env": {
         "FIRECRAWL_API_KEY": "${FIRECRAWL_KEY}"
       }
+    },
+    "supabase": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server-supabase@latest", "--project-ref=${SUPABASE_PROJECT_REF}"],
+      "env": {}
+    },
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${HOME}/Desktop/work"],
+      "env": {}
     }
   }
 }

@@ -14,12 +14,12 @@ echo ""
 mkdir -p "$CLAUDE_DIR"
 
 # CLAUDE.md (항상 덮어씀 - 이 프로젝트가 원천)
-cp "$SCRIPT_DIR/global/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
+cp "$SCRIPT_DIR/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
 echo "[1/6] CLAUDE.md 배포 완료"
 
 # settings.json (없으면 생성, 있으면 건너뜀)
 if [ ! -f "$CLAUDE_DIR/settings.json" ]; then
-  cp "$SCRIPT_DIR/global/settings.example.json" "$CLAUDE_DIR/settings.json"
+  cp "$SCRIPT_DIR/settings.example.json" "$CLAUDE_DIR/settings.json"
   echo "[2/6] settings.json 생성 완료"
 else
   echo "[2/6] settings.json 이미 존재 (건너뜀, 강제: setup.sh --force)"
@@ -27,7 +27,7 @@ fi
 
 # mcp.json (없으면 생성)
 if [ ! -f "$CLAUDE_DIR/mcp.json" ]; then
-  cp "$SCRIPT_DIR/global/mcp.example.json" "$CLAUDE_DIR/mcp.json"
+  cp "$SCRIPT_DIR/mcp.example.json" "$CLAUDE_DIR/mcp.json"
   echo "[3/6] mcp.json 생성 완료"
   echo "       -> GITHUB_TOKEN, FIRECRAWL_KEY 환경변수를 설정하세요"
 else
@@ -36,8 +36,8 @@ fi
 
 # --force 옵션
 if [ "$1" = "--force" ]; then
-  cp "$SCRIPT_DIR/global/settings.example.json" "$CLAUDE_DIR/settings.json"
-  cp "$SCRIPT_DIR/global/mcp.example.json" "$CLAUDE_DIR/mcp.json"
+  cp "$SCRIPT_DIR/settings.example.json" "$CLAUDE_DIR/settings.json"
+  cp "$SCRIPT_DIR/mcp.example.json" "$CLAUDE_DIR/mcp.json"
   echo "       -> settings.json, mcp.json 강제 덮어씀"
 fi
 
